@@ -1,11 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tablero de control del propietario</title>
+  <link rel="stylesheet" href="obligatorioCss.css">
+  <script src="vistaWeb.js"></script>
 </head>
-<body>
-    <p>sos prop</p>
+
+<body class="page-gestion-contactos">
+
+  <div class="container">
+
+    <!-- Título y salir -->
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h2>Tablero de control del propietario</h2>
+      <a href="login.html" style="color: #b91c1c; font-weight: bold; text-decoration: none;">Salir</a>
+    </div>
+
+    <!-- Resumen -->
+    <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px;">
+      <h3>Resumen del propietario</h3>
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+        <div style="flex: 1; min-width: 200px;">
+          <label>Nombre completo:</label>
+          <p id="nombreCompleto">---</p>
+        </div>
+        <div style="flex: 1; min-width: 200px;">
+          <label>Estado:</label>
+          <p id="estado">---</p>
+        </div>
+        <div style="flex: 1; min-width: 200px;">
+          <label>Saldo actual:</label>
+          <p id="saldo" style="font-weight: bold; color: green;">$ 0,00</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bonificaciones y vehículos -->
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
+      <div style="flex: 1; min-width: 300px; background: white; padding: 20px; border-radius: 8px;">
+        <h3>Bonificaciones asignadas</h3>
+        <div id="tablaBonificaciones">Cargando...</div>
+      </div>
+
+      <div style="flex: 1; min-width: 300px; background: white; padding: 20px; border-radius: 8px;">
+        <h3>Vehículos registrados</h3>
+        <div id="tablaVehiculos">Cargando...</div>
+      </div>
+    </div>
+
+    <!-- Tránsitos -->
+    <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px;">
+      <h3>Tránsitos realizados</h3>
+      <div id="tablaTransitos">Cargando...</div>
+    </div>
+
+    <!-- Notificaciones -->
+    <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px;">
+      <h3>Notificaciones del sistema</h3>
+      <div id="tablaNotificaciones">Cargando...</div>
+      <div style="text-align: right; margin-top: 10px;">
+        <button id="btnBorrarNotificaciones" class="btn-acceder" style="background-color: #dc2626;">
+          Borrar notificaciones
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Al cargar la página pide los datos al backend
+    urlIniciarVista = "/propietario/tablero";
+
+    function procesarErrorSubmit(status, text) {
+      alert("Error al cargar el tablero (" + status + ")");
+      console.error(text);
+    }
+
+    // Cargar los datos del propietario
+    function mostrar_tablero(datos) {
+      document.getElementById("nombreCompleto").textContent = datos.nombreCompleto || "---";
+      document.getElementById("estado").textContent = datos.estado || "---";
+      document.getElementById("saldo").textContent = "$ " + (datos.saldoActual || "0,00");
+
+      document.getElementById("tablaBonificaciones").innerHTML =
+        datos.bonificaciones && datos.bonificaciones.length > 0 ?
+        crearTablaDesdeJson(datos.bonificaciones) :
+        "<p>No hay bonificaciones asignadas.</p>";
+
+      document.getElementById("tablaVehiculos").innerHTML =
+        datos.vehiculos && datos.vehiculos.length > 0 ?
+        crearTablaDesdeJson(datos.vehiculos) :
+        "<p>No hay vehículos registrados.</p>";
+
+      document.getElementById("tablaTransitos").innerHTML =
+        datos.transitos && datos.transitos.length > 0 ?
+        crearTablaDesdeJson(datos.transitos) :
+        "<p>No hay tránsitos registrados.</p>";
+
+      document.getElementById("tablaNotificaciones").innerHTML =
+        datos.notificaciones && datos.notificaciones.length > 0 ?
+        crearTablaDesdeJson(datos.notificaciones) :
+        "<p>No hay notificaciones para mostrar.</p>";
+    }
+
+    // Botón borrar notificaciones (simple)
+    document.getElementById("btnBorrarNotificaciones").onclick = function() {
+      document.getElementById("tablaNotificaciones").innerHTML = "<p>No hay notificaciones para mostrar.</p>";
+      alert("Se borraron las notificaciones correctamente.");
+    };
+  </script>
+
 </body>
 </html>

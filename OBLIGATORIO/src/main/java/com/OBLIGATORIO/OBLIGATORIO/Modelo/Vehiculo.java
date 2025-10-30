@@ -12,13 +12,23 @@ public class Vehiculo {
     private String colorVehiculo;
     @Getter
     private CategoriaVehiculo categoriaVehiculo;
+    @Getter
+    private UsuarioPropietario usuarioPropietario;
 
 
-    public Vehiculo(String matriculaVehiculo, String modeloVehiculo, String colorVehiculo, CategoriaVehiculo categoriaVehiculo){
+    public Vehiculo(String matriculaVehiculo, String modeloVehiculo, String colorVehiculo, CategoriaVehiculo categoriaVehiculo, UsuarioPropietario usuprop){
         this.matriculaVehiculo = matriculaVehiculo;
         this.modeloVehiculo = modeloVehiculo;
         this.colorVehiculo = colorVehiculo;
         this.categoriaVehiculo = categoriaVehiculo;
+        this.usuarioPropietario = usuprop;
         
     }
+
+    
+    public void setUsuarioPropietario(UsuarioPropietario usuarioPropietario) {
+        this.usuarioPropietario = usuarioPropietario;
+    }
+
+    
 }
