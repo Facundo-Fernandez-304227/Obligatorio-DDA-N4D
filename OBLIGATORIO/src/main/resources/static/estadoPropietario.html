@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambiar estado de propietario</title>
+    <link rel="stylesheet" href="obligatorioCss.css">
+    <script src="vistaWeb.js"></script>
+    <script src="utilesVista.js"></script>
+</head>
+
+<body class="page-gestion-contactos">
+
+    <div class="container">
+
+        <!-- Título -->
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Cambiar estado de propietario</h2>
+            <a href="login.html" style="color: #b91c1c; font-weight: bold; text-decoration: none;">Salir</a>
+        </div>
+
+        <!-- Descripción -->
+        <p style="margin-top: 10px; color: #444;">
+            Ingrese la cédula, revise el estado actual y seleccione un nuevo estado (datos de ejemplo).
+        </p>
+
+        <!-- Formulario -->
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
+
+            <!-- Cédula -->
+            <div style="flex: 1; min-width: 250px; background: white; padding: 20px; border-radius: 8px;">
+                <div class="form-group">
+                    <label for="cedula">Cédula de identidad</label>
+                    <input type="text" id="cedula" name="cedula" placeholder="Ej: 12345678">
+                </div>
+                <button id="btnBuscar" class="btn-acceder" style="margin-top: 10px; width: 100%;">Buscar</button>
+            </div>
+
+            <!-- Estados -->
+            <div style="flex: 1; min-width: 250px; background: white; padding: 20px; border-radius: 8px;">
+                <div class="form-group">
+                    <label for="estadoNuevo">Estados definidos</label>
+                    <select id="estadoNuevo" name="estadoNuevo">
+                        <option value="">Seleccionar...</option>
+                    </select>
+                </div>
+                <button id="btnCambiar" class="btn-acceder" style="margin-top: 10px; width: 100%;">Cambiar
+                    estado</button>
+                <p style="font-size: 13px; color: #666; margin-top: 10px;">
+                    El estado actual se mostrará preseleccionado.
+                </p>
+            </div>
+        </div>
+
+        <!-- Propietario -->
+        <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 25px;">
+            <h3>Propietario</h3>
+            <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+                <p><strong>Nombre</strong><br><span id="nombreProp">---</span></p>
+                <p><strong>Estado actual</strong><br><span id="estadoActual">---</span></p>
+            </div>
+        </div>
+
+        <h4>Otras opciones:</h4>
+        <div style="display: flex; gap: 10px; margin-top: 40px;">
+            <button type="button" class="btn-acceder" id="btnAsignar"
+                onclick="window.location.href='asignarBonificacion.html'">
+                Asignar Bonificación
+            </button>
+            <button type="submit" class="btn-MenuAdministrador" id="btnMenuAdministrador"
+                onclick="window.location.href='menuAdministrador.html'">
+                Menu administrador
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Al cargar la página pide los datos al backend
+        urlIniciarVista = "/admin/cambiarEstado";
+
+        function procesarErrorSubmit(status, text) {
+            alert("Error al cargar la página de cambio de estado (" + status + ")");
+            console.error(text);
+        }
+
+        // Cargar lista de estados disponibles
+        function mostrar_cambiarEstado(datos) {
+            let selectEstado = document.getElementById("estadoNuevo");
+            selectEstado.innerHTML = "<option value=''>Seleccionar...</option>";
+
+            if (datos.estados && datos.estados.length > 0) {
+                datos.estados.forEach(e => {
+                    let option = document.createElement("option");
+                    option.value = e.id;
+                    option.textContent = e.nombre;
+                    selectEstado.appendChild(option);
+                });
+            }
+        }
+
+        // Botón buscar propietario
+        document.getElementById("btnBuscar").onclick = function () {
+            let cedula = document.getElementById("cedula").value.trim();
+
+            if (cedula === "") {
+                alert("Debe ingresar una cédula para buscar al propietario.");
+                return;
+            }
+
+            submit("/admin/buscarPropietarioEstado", "cedula=" + encodeURIComponent(cedula), "GET");
+        };
+
+        // Mostrar los datos del propietario
+        function mostrar_buscarPropietarioEstado(datos) {
+            document.getElementById("nombreProp").textContent = datos.nombre || "---";
+            document.getElementById("estadoActual").textContent = datos.estado || "---";
+
+            // Mostrar estado actual preseleccionado si existe
+            let selectEstado = document.getElementById("estadoNuevo");
+            for (let i = 0; i < selectEstado.options.length; i++) {
+                if (selectEstado.options[i].text === datos.estado) {
+                    selectEstado.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+        // Botón cambiar estado
+        document.getElementById("btnCambiar").onclick = function () {
+            let cedula = document.getElementById("cedula").value.trim();
+            let nuevoEstado = document.getElementById("estadoNuevo").value;
+
+            if (cedula === "" || nuevoEstado === "") {
+                alert("Debe ingresar una cédula y seleccionar un nuevo estado.");
+                return;
+            }
+
+            let datos = "cedula=" + encodeURIComponent(cedula) +
+                "&estadoNuevo=" + encodeURIComponent(nuevoEstado);
+
+            submit("/admin/actualizarEstado", datos, "POST");
+        };
+
+        // Mostrar confirmación cuando se cambie el estado
+        function mostrar_actualizarEstado(mensaje) {
+            alert("El estado del propietario fue actualizado correctamente.");
+            // Refrescar datos
+            document.getElementById("btnBuscar").click();
+        }
+    </script>
+
+</body>
+
+</html>

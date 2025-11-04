@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asignar bonificaciones</title>
+    <link rel="stylesheet" href="obligatorioCss.css">
+    <script src="vistaWeb.js"></script>
+    <script src="utilesVista.js"></script>
+</head>
+
+<body class="page-gestion-contactos">
+
+    <div class="container">
+
+        <!-- Título -->
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Asignar bonificaciones</h2>
+            <a href="login.html" style="color: #b91c1c; font-weight: bold; text-decoration: none;">Salir</a>
+        </div>
+
+        <!-- Formulario principal -->
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
+
+            <!-- Columna izquierda -->
+            <div style="flex: 1; min-width: 300px; background: white; padding: 20px; border-radius: 8px;">
+
+                <div class="form-group">
+                    <label for="bonificacion">Bonificaciones definidas</label>
+                    <select id="bonificacion" name="bonificacion">
+                        <option value="">Seleccionar...</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <label for="puesto">Puestos definidos</label>
+                    <select id="puesto" name="puesto">
+                        <option value="">Seleccionar...</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Columna derecha -->
+            <div style="flex: 1.3; min-width: 350px; background: white; padding: 20px; border-radius: 8px;">
+
+                <!-- Buscar propietario -->
+                <div class="form-group">
+                    <label for="cedula">Cédula de identidad</label>
+                    <input type="text" id="cedula" name="cedula" placeholder="Ej: 12345678">
+                </div>
+
+                <button id="btnBuscar" class="btn-acceder" style="width: 100%; margin-bottom: 20px;">
+                    Buscar propietario
+                </button>
+
+                <!-- Datos del propietario -->
+                <h3>Propietario</h3>
+                <p><strong>Nombre:</strong> <span id="nombreProp">---</span></p>
+                <p><strong>Estado:</strong> <span id="estadoProp">---</span></p>
+
+                <!-- Bonificaciones asignadas -->
+                <h3 style="margin-top: 20px;">Bonificaciones asignadas</h3>
+                <div id="tablaBonificaciones" style="margin-top: 10px;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left; border-bottom: 1px solid #ddd; padding: 8px;">Bonificación
+                                </th>
+                                <th style="text-align: left; border-bottom: 1px solid #ddd; padding: 8px;">Puesto</th>
+                                <th style="text-align: left; border-bottom: 1px solid #ddd; padding: 8px;">Fecha
+                                    asignación</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyBonificaciones">
+                            <tr>
+                                <td colspan="3" style="padding: 8px;">Sin bonificaciones asignadas</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Asignar nueva bonificación -->
+                <h3 style="margin-top: 25px;">Asignar nueva bonificación</h3>
+                <p style="font-size: 14px; color: #555;">
+                    Seleccione bonificación y puesto en las listas de la izquierda y luego asigne.
+                </p>
+
+                <button id="btnAsignar" class="btn-acceder" style="margin-top: 10px;">
+                    Asignar bonificación
+                </button>
+            </div>
+        </div>
+
+        <h4>Otras opciones:</h4>
+        <div style="display: flex; gap: 10px; margin-top: 40px;">
+            <button type="button" class="btn-MenuAdministrador" id="btnMenuAdministrador" onclick="window.location.href='menuAdministrador.html'">
+                Menu administrador
+            </button>
+            <button type="submit" class="btn-CambiarEstado" id="btnCambiarEstado" onclick="window.location.href='estadoPropietario.html'">
+                Cambiar estado propietario
+            </button>
+        </div>
+
+
+    </div>
+
+    <script>
+        // Al cargar la página pide los datos al backend
+        urlIniciarVista = "/admin/asignarBonificaciones";
+
+        function procesarErrorSubmit(status, text) {
+            alert("Error al cargar la página de bonificaciones (" + status + ")");
+            console.error(text);
+        }
+
+        // Cargar las listas de bonificaciones y puestos
+        function mostrar_asignarBonificaciones(datos) {
+            // Bonificaciones
+            let listaBonificaciones = document.getElementById("bonificacion");
+            listaBonificaciones.innerHTML = "<option value=''>Seleccionar...</option>";
+
+            if (datos.bonificaciones && datos.bonificaciones.length > 0) {
+                datos.bonificaciones.forEach(b => {
+                    let opcion = document.createElement("option");
+                    opcion.value = b.id;
+                    opcion.textContent = b.nombre;
+                    listaBonificaciones.appendChild(opcion);
+                });
+            }
+
+            // Puestos
+            let listaPuestos = document.getElementById("puesto");
+            listaPuestos.innerHTML = "<option value=''>Seleccionar...</option>";
+
+            if (datos.puestos && datos.puestos.length > 0) {
+                datos.puestos.forEach(p => {
+                    let opcion = document.createElement("option");
+                    opcion.value = p.id;
+                    opcion.textContent = p.nombre;
+                    listaPuestos.appendChild(opcion);
+                });
+            }
+        }
+
+        // Buscar propietario
+        document.getElementById("btnBuscar").onclick = function () {
+            let cedula = document.getElementById("cedula").value.trim();
+
+            if (cedula === "") {
+                alert("Debe ingresar una cédula para buscar al propietario.");
+                return;
+            }
+
+            submit("/admin/buscarPropietario", "cedula=" + encodeURIComponent(cedula), "GET");
+        };
+
+        // Mostrar datos del propietario y sus bonificaciones
+        function mostrar_buscarPropietario(datos) {
+            document.getElementById("nombreProp").textContent = datos.nombre || "---";
+            document.getElementById("estadoProp").textContent = datos.estado || "---";
+
+            if (datos.bonificaciones && datos.bonificaciones.length > 0) {
+                document.getElementById("tablaBonificaciones").innerHTML = crearTablaDesdeJson(datos.bonificaciones);
+            } else {
+                document.getElementById("tablaBonificaciones").innerHTML = "<p>Sin bonificaciones asignadas.</p>";
+            }
+        }
+
+        // Asignar nueva bonificación
+        document.getElementById("btnAsignar").onclick = function () {
+            let cedula = document.getElementById("cedula").value.trim();
+            let bonificacion = document.getElementById("bonificacion").value;
+            let puesto = document.getElementById("puesto").value;
+
+            if (cedula === "" || bonificacion === "" || puesto === "") {
+                alert("Debe completar todos los campos antes de asignar.");
+                return;
+            }
+
+            let datos = "cedula=" + encodeURIComponent(cedula) +
+                "&bonificacion=" + encodeURIComponent(bonificacion) +
+                "&puesto=" + encodeURIComponent(puesto);
+
+            submit("/admin/asignarBonificacion", datos, "POST");
+        };
+
+        // Cuando se asigna correctamente
+        function mostrar_asignarBonificacion(mensaje) {
+            alert("Bonificación asignada correctamente.");
+            // Refrescar los datos del propietario
+            document.getElementById("btnBuscar").click();
+        }
+    </script>
+
+</body>
+
+</html>

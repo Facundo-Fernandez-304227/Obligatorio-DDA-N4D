@@ -1,12 +1,200 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emular tránsito</title>
     <link rel="stylesheet" href="obligatorioCss.css">
-    <title>Menu Administrador</title>
+    <script src="vistaWeb.js"></script>
+    <script src="utilesVista.js"></script>
 </head>
-<body>
-    <p>hola sos admin</p>
+
+<body class="page-gestion-contactos">
+
+    <div class="container">
+
+        <!-- Título -->
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Emular tránsito</h2>
+            <a href="login.html" style="color: #b91c1c; font-weight: bold; text-decoration: none;">Salir</a>
+        </div>
+
+        <!-- Descripción -->
+        <p style="margin-top: 10px; color: #444;">
+            Seleccione un puesto, verifique sus tarifas, ingrese una matrícula y emule un tránsito.
+        </p>
+
+        <!-- Formulario -->
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px;">
+            <!-- Columna izquierda -->
+            <div style="flex: 1; min-width: 300px; background: white; padding: 20px; border-radius: 8px;">
+                <form id="formEmular" class="form-large">
+                    <div class="form-group">
+                        <label for="puesto">Puesto</label>
+                        <select id="puesto" name="puesto">
+                            <option value="">Seleccionar...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="matricula">Matrícula</label>
+                        <input type="text" id="matricula" name="matricula" placeholder="Ej: ABC1234">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fechaHora">Fecha y hora del tránsito</label>
+                        <input type="datetime-local" id="fechaHora" name="fechaHora">
+                    </div>
+
+                    <button type="submit" class="btn-acceder" id="btnEmular" style="margin-top: 15px;">
+                        Emular tránsito
+                    </button>
+
+                </form>
+            </div>
+
+            <!-- Columna derecha: tarifas -->
+            <div style="flex: 1; min-width: 300px; background: white; padding: 20px; border-radius: 8px;">
+                <h3>Tarifas del puesto</h3>
+                <table id="tablaTarifas" style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; border-bottom: 1px solid #ddd; padding: 8px;">Categoría</th>
+                            <th style="text-align: left; border-bottom: 1px solid #ddd; padding: 8px;">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Se cargan dinámicamente -->
+                    </tbody>
+                </table>
+                <p style="font-size: 13px; color: #666; margin-top: 10px;">
+                    Se muestran categoría y monto actuales del puesto seleccionado.
+                </p>
+            </div>
+        </div>
+
+        <!-- Resultado -->
+        <div id="resultado"
+            style="background: white; padding: 20px; border-radius: 8px; margin-top: 25px; display: none;">
+            <h3>Resultado</h3>
+            <div style="margin-top: 10px; line-height: 1.6;">
+                <p><strong>Propietario:</strong> <span id="resPropietario"></span></p>
+                <p><strong>Categoría:</strong> <span id="resCategoria"></span></p>
+                <p><strong>Bonificación:</strong> <span id="resBonificacion"></span></p>
+                <p><strong>Costo del tránsito:</strong> <span id="resCosto"></span></p>
+                <p><strong>Saldo luego del tránsito:</strong> <span id="resSaldo"></span></p>
+            </div>
+        </div>
+
+        <h4>Otras opciones:</h4>
+        <div style="display: flex; gap: 10px; margin-top: 40px;">
+            <button type="button" class="btn-acceder" id="btnAsignar"
+                onclick="window.location.href='asignarBonificacion.html'">
+                Asignar Bonificación
+            </button>
+            <button type="submit" class="btn-CambiarEstado" id="btnCambiarEstado" onclick="window.location.href='estadoPropietario.html'">
+                Cambiar estado propietario
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Cuando se carga la página, se piden los datos al backend
+        urlIniciarVista = "/admin/iniciarVista";
+
+        // Si hay un error con el servidor
+        function procesarErrorSubmit(status, text) {
+            alert("Ocurrió un error al cargar la información del administrador.");
+            console.log("Código:", status);
+            console.log("Detalle:", text);
+        }
+
+        // Cuando llegan los datos iniciales del backend
+        function mostrar_iniciarVista(datos) {
+            // Cargar los puestos en el select
+            let combo = document.getElementById("puesto");
+            combo.innerHTML = "<option value=''>Seleccionar...</option>";
+
+            if (datos.puestos && datos.puestos.length > 0) {
+                datos.puestos.forEach(p => {
+                    let opcion = document.createElement("option");
+                    opcion.value = p.id;
+                    opcion.textContent = p.nombre;
+                    combo.appendChild(opcion);
+                });
+            } else {
+                combo.innerHTML = "<option value=''>No hay puestos disponibles</option>";
+            }
+
+            // Si ya vienen tarifas por defecto, se muestran
+            if (datos.tarifas && datos.tarifas.length > 0) {
+                mostrarTarifas(datos.tarifas);
+            }
+        }
+
+        // Función para mostrar las tarifas en la tabla
+        function mostrarTarifas(listaTarifas) {
+            let cuerpoTabla = document.querySelector("#tablaTarifas tbody");
+            cuerpoTabla.innerHTML = "";
+
+            if (!listaTarifas || listaTarifas.length === 0) {
+                cuerpoTabla.innerHTML = "<tr><td colspan='2'>No hay tarifas disponibles.</td></tr>";
+                return;
+            }
+
+            listaTarifas.forEach(tarifa => {
+                let fila = document.createElement("tr");
+                fila.innerHTML = `
+        <td>${tarifa.categoria}</td>
+        <td>$ ${tarifa.monto.toFixed(2)}</td>
+      `;
+                cuerpoTabla.appendChild(fila);
+            });
+        }
+
+        // Cuando el usuario cambia el puesto del combo
+        document.getElementById("puesto").addEventListener("change", function () {
+            let idPuesto = this.value;
+
+            if (idPuesto === "") {
+                document.querySelector("#tablaTarifas tbody").innerHTML = "";
+                return;
+            }
+
+            // Pedir las tarifas del puesto seleccionado al backend
+            submit("/admin/tarifas", "idPuesto=" + encodeURIComponent(idPuesto), "GET");
+        });
+
+        // Cuando llegan las tarifas del backend
+        function mostrar_tarifas(datos) {
+            mostrarTarifas(datos.tarifas);
+        }
+
+        // Cuando se envía el formulario de emular tránsito
+        document.getElementById("formEmular").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            let datosForm = serializarFormulario("formEmular");
+
+            // Enviar los datos al backend
+            submit("/admin/emularTransito", datosForm, "POST");
+        });
+
+        // Cuando llega el resultado del tránsito emulado
+        function mostrar_emularTransito(info) {
+            document.getElementById("resultado").style.display = "block";
+
+            document.getElementById("resPropietario").textContent = info.propietario;
+            document.getElementById("resCategoria").textContent = info.categoria;
+            document.getElementById("resBonificacion").textContent = info.bonificacion;
+            document.getElementById("resCosto").textContent = "$ " + info.costo.toFixed(2);
+            document.getElementById("resSaldo").textContent = "$ " + info.saldo.toFixed(2);
+        }
+    </script>
+
+
 </body>
+
 </html>
