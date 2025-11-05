@@ -1,7 +1,4 @@
 package com.OBLIGATORIO.OBLIGATORIO.Modelo;
-
-import com.OBLIGATORIO.OBLIGATORIO.Interfaces.IEstadoPropietario;
-
 import lombok.Getter;
 
 public abstract class Usuario {
@@ -19,6 +16,12 @@ public abstract class Usuario {
         this.contrasenia = contrasenia;
         this.nombreCompleto = nombreCompleto;
     }
+
+
+    public boolean contraseniaValida(String contrasenia2) {
+        return this.contrasenia.equals(contrasenia2);
+    }
+
 
 
 }

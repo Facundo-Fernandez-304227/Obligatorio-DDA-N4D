@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.OBLIGATORIO.OBLIGATORIO.Dtos.PropietarioDTO;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
+import com.OBLIGATORIO.OBLIGATORIO.Modelo.Vehiculo;
 import com.OBLIGATORIO.OBLIGATORIO.Utils.Respuesta;
 
 import jakarta.servlet.http.HttpSession;
@@ -22,13 +23,17 @@ public class ControladorMenuPropietario {
         Object usuario = sesion.getAttribute("usuarioLogueado");
 
         if (usuario == null) {
-            //Redirige al login
+            // Redirige al login
             return Respuesta.lista(new Respuesta("usuarioNoAutenticado", "login.html"));
         }
 
         if (!(usuario instanceof UsuarioPropietario propietario)) {
-            //Si el usuario no es propietario redrigie al login
+            // Si el usuario no es propietario redrigie al login
             return Respuesta.lista(new Respuesta("usuarioNoAutenticado", "login.html"));
+        }
+
+        for (Vehiculo v : propietario.getVehiculosPropietario()) {
+            System.out.println(" - " + v.getMatriculaVehiculo() + " / " + v.getModeloVehiculo());
         }
 
         // Creamos el DTO con los datos del propietario
@@ -36,5 +41,6 @@ public class ControladorMenuPropietario {
 
         // El "id" debe coincidir con la función en tu HTML → mostrar_tablero()
         return Respuesta.lista(new Respuesta("tablero", dto));
+
     }
 }

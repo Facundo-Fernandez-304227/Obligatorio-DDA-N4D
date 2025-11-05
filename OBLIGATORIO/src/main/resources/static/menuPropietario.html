@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tablero de control del propietario</title>
   <link rel="stylesheet" href="obligatorioCss.css">
+  <script src="utilesVista.js"></script>
   <script src="vistaWeb.js"></script>
+
 </head>
 
 <body class="page-gestion-contactos">
@@ -46,7 +49,7 @@
 
       <div style="flex: 1; min-width: 300px; background: white; padding: 20px; border-radius: 8px;">
         <h3>Vehículos registrados</h3>
-        <div id="tablaVehiculos">Cargando...</div>
+        <div id="tablaVehiculos"></div>
       </div>
     </div>
 
@@ -79,37 +82,42 @@
 
     // Cargar los datos del propietario
     function mostrar_tablero(datos) {
+      console.log("Datos recibidos en mostrar_tablero:", datos);
+
+
       document.getElementById("nombreCompleto").textContent = datos.nombreCompleto || "---";
       document.getElementById("estado").textContent = datos.estado || "---";
       document.getElementById("saldo").textContent = "$ " + (datos.saldoActual || "0,00");
 
       document.getElementById("tablaBonificaciones").innerHTML =
-        datos.bonificaciones && datos.bonificaciones.length > 0 ?
-        crearTablaDesdeJson(datos.bonificaciones) :
-        "<p>No hay bonificaciones asignadas.</p>";
+        datos.bonificaciones && datos.bonificaciones.length > 0
+          ? crearTablaDesdeJson(datos.bonificaciones)
+          : "<p>No hay bonificaciones asignadas.</p>";
 
       document.getElementById("tablaVehiculos").innerHTML =
-        datos.vehiculos && datos.vehiculos.length > 0 ?
-        crearTablaDesdeJson(datos.vehiculos) :
-        "<p>No hay vehículos registrados.</p>";
+        datos.vehiculos && datos.vehiculos.length > 0
+          ? crearTablaDesdeJson(datos.vehiculos)
+          : "<p>No hay vehículos registrados.</p>";
 
       document.getElementById("tablaTransitos").innerHTML =
-        datos.transitos && datos.transitos.length > 0 ?
-        crearTablaDesdeJson(datos.transitos) :
-        "<p>No hay tránsitos registrados.</p>";
+        datos.transitos && datos.transitos.length > 0
+          ? crearTablaDesdeJson(datos.transitos)
+          : "<p>No hay tránsitos registrados.</p>";
 
       document.getElementById("tablaNotificaciones").innerHTML =
-        datos.notificaciones && datos.notificaciones.length > 0 ?
-        crearTablaDesdeJson(datos.notificaciones) :
-        "<p>No hay notificaciones para mostrar.</p>";
+        datos.notificaciones && datos.notificaciones.length > 0
+          ? crearTablaDesdeJson(datos.notificaciones)
+          : "<p>No hay notificaciones para mostrar.</p>";
     }
 
+
     // Botón borrar notificaciones (simple)
-    document.getElementById("btnBorrarNotificaciones").onclick = function() {
+    document.getElementById("btnBorrarNotificaciones").onclick = function () {
       document.getElementById("tablaNotificaciones").innerHTML = "<p>No hay notificaciones para mostrar.</p>";
       alert("Se borraron las notificaciones correctamente.");
     };
   </script>
 
 </body>
+
 </html>

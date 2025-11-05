@@ -3,13 +3,15 @@ package com.OBLIGATORIO.OBLIGATORIO.Servicio;
 import java.util.ArrayList;
 import java.util.List;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.VehiculoException;
+import com.OBLIGATORIO.OBLIGATORIO.Modelo.Transito;
+import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Vehiculo;
 
 public class ServicioVehiculos {
     private List<Vehiculo> vehiculos = new ArrayList<Vehiculo>();
 
-    public void agregarVehiculo(Vehiculo vehiculo1) throws VehiculoException{
-        
+    public void agregarVehiculo(Vehiculo vehiculo1) throws VehiculoException {
+
         if (vehiculo1 == null) {
             throw new VehiculoException("El vehiculo no puede ser nulo.");
         }
@@ -20,10 +22,40 @@ public class ServicioVehiculos {
             }
         }
 
-        //Agregamos el vehiculo al propietario.
-        vehiculo1.getUsuarioPropietario().agregarVehiculo(vehiculo1);
-        //Agregamos el vehiculo a la lista.
+        // Agregamos el vehiculo al propietario.
+        UsuarioPropietario propietario = Fachada.getInstancia()
+                .buscarPropietarioPorCedula(vehiculo1.getUsuarioPropietario().getCedula());
+        if (propietario != null) {
+            propietario.agregarVehiculo(vehiculo1);
+            vehiculo1.setUsuarioPropietario(propietario);
+        }
+        // Agregamos el vehiculo a la lista.
         vehiculos.add(vehiculo1);
+    }
+
+    public void agregarTransito(Transito transito1) throws VehiculoException {
+        if (transito1 == null) {
+            throw new VehiculoException("El tránsito no puede ser nulo.");
+        }
+
+        Vehiculo vehiculo = transito1.getVehiculo();
+        if (vehiculo == null || vehiculo.getMatriculaVehiculo() == null) {
+            throw new VehiculoException("El tránsito no tiene un vehículo asociado válido.");
+        }
+
+        Vehiculo vehiculoEncontrado = null;
+        for (Vehiculo v : vehiculos) {
+            if (v.getMatriculaVehiculo().equalsIgnoreCase(vehiculo.getMatriculaVehiculo())) {
+                vehiculoEncontrado = v;
+                break;
+            }
+        }
+
+        if (vehiculoEncontrado == null) {
+            throw new VehiculoException("No se encontró el vehículo con matrícula: " + vehiculo.getMatriculaVehiculo());
+        }
+
+        vehiculoEncontrado.getTransitos().add(transito1);
     }
 
 }

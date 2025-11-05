@@ -7,16 +7,36 @@ import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
 
 public class PropietarioDTO {
     public String nombreCompleto;
-    //public String estadoPropietario;
+    // public String estadoPropietario;
     public double saldoActual;
     public List<VehiculoDTO> vehiculos;
+    public List<BonificacionAsignadaDTO> bonificaciones;
+    public List<TransitosDTO> transitos;
 
-    public PropietarioDTO(UsuarioPropietario prop){
+    public PropietarioDTO(UsuarioPropietario prop) {
+
+        // NOMBRE
         this.nombreCompleto = prop.getNombreCompleto();
-        //this.estadoPropietario = prop.getEstado();
+
+        // ESTADO
+        // this.estadoPropietario = prop.getEstado();
+
+        // SALDO
         this.saldoActual = prop.getSaldoActual();
-        //Convertir los vehiculos en vechiculosDTO
+
+        // VEHICULOS
         this.vehiculos = prop.getVehiculosPropietario().stream().map(VehiculoDTO::new).collect(Collectors.toList());
+
+        // BONIFICACIONES
+        this.bonificaciones = prop.getBonificacionAsignadas().stream()
+                .map(BonificacionAsignadaDTO::new)
+                .collect(Collectors.toList());
+
+        // TRANSITOS
+        this.transitos = prop.getVehiculosPropietario().stream()
+                .flatMap(v -> v.getTransitos().stream())
+                .map(TransitosDTO::new)
+                .collect(Collectors.toList());
     }
 
     public String getNombrePropietario() {
@@ -34,9 +54,5 @@ public class PropietarioDTO {
     public List<VehiculoDTO> getVehiculos() {
         return vehiculos;
     }
-
-    
-
-
 
 }

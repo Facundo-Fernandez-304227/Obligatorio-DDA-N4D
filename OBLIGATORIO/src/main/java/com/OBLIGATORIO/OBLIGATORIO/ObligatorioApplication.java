@@ -1,11 +1,20 @@
 package com.OBLIGATORIO.OBLIGATORIO;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.UsuarioException;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.VehiculoException;
+import com.OBLIGATORIO.OBLIGATORIO.Modelo.Bonificacion;
+import com.OBLIGATORIO.OBLIGATORIO.Modelo.BonificacionExonerados;
+import com.OBLIGATORIO.OBLIGATORIO.Modelo.BonificacionFrecuente;
+import com.OBLIGATORIO.OBLIGATORIO.Modelo.BonificacionTrabajadores;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.CategoriaVehiculo;
+import com.OBLIGATORIO.OBLIGATORIO.Modelo.Puesto;
+import com.OBLIGATORIO.OBLIGATORIO.Modelo.Transito;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioAdministrador;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Vehiculo;
@@ -19,12 +28,13 @@ public class ObligatorioApplication {
 		precargaDeDatos();
 	}
 
-	public static void precargaDeDatos() throws VehiculoException {
+	public static void precargaDeDatos() throws VehiculoException, UsuarioException {
 
 		UsuarioAdministrador admin1 = new UsuarioAdministrador("12345678", "admin.123", "Usuario Administrador");
 		Fachada.getInstancia().agregarAdministrador(admin1);
 
-		UsuarioPropietario propietario1 = new UsuarioPropietario("23456789", "prop.123", "Usuario Propietario", 2000,500);
+		UsuarioPropietario propietario1 = new UsuarioPropietario("23456789", "prop.123", "Usuario Propietario", 2000,
+				500);
 		Fachada.getInstancia().agregarPropietario(propietario1);
 
 		CategoriaVehiculo categoriaAuto = new CategoriaVehiculo("Auto");
@@ -34,5 +44,17 @@ public class ObligatorioApplication {
 		Vehiculo vehiculo2 = new Vehiculo("ABC-5678", "Fiorino-123", "Blanco", categoriaCamioneta, propietario1);
 		Fachada.getInstancia().agregarVehiculo(vehiculo1);
 		Fachada.getInstancia().agregarVehiculo(vehiculo2);
+
+		Puesto puesto = new Puesto("Puesto - 111", "Ruta Interbalnearia");
+		Puesto puesto2 = new Puesto("Puesto - 222", "Ruta 5");
+		Bonificacion bonificacion = new BonificacionFrecuente();
+		Bonificacion bonificacion2 = new BonificacionTrabajadores();
+		Bonificacion bonificacion3 = new BonificacionExonerados();
+
+		Fachada.getInstancia().asignarBonificacion("23456789", bonificacion3, puesto);
+
+		Transito transito1 = new Transito(LocalDate.of(2025, 9, 19), LocalTime.of(18, 45), 120.00, vehiculo1, puesto,
+				bonificacion3);
+		Fachada.getInstancia().agregarTransito(transito1);
 	}
 }

@@ -5,13 +5,13 @@ import com.OBLIGATORIO.OBLIGATORIO.Modelo.Vehiculo;
 public class VehiculoDTO {
     public String matricula;
     public String modelo;
-    public String color;
-    public String categoria;
+    public int transitos;
+    public double montoTotal;
 
     public VehiculoDTO(Vehiculo vehiculo) {
         this.matricula = vehiculo.getMatriculaVehiculo();
         this.modelo = vehiculo.getModeloVehiculo();
-        this.color = vehiculo.getColorVehiculo();
-        this.categoria = vehiculo.getCategoriaVehiculo().getNombreCategoria();
+        this.transitos = vehiculo.getTransitos().size();
+        this.montoTotal = vehiculo.getMontoTransitos();
     }
 }

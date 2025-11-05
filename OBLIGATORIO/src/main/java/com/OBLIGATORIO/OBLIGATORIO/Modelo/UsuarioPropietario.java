@@ -1,5 +1,6 @@
 package com.OBLIGATORIO.OBLIGATORIO.Modelo;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.VehiculoException;
@@ -17,6 +18,8 @@ public class UsuarioPropietario extends Usuario {
     private List<Vehiculo> vehiculosPropietario;
     @Getter
     private IEstadoPropietario estado;
+    @Getter
+    private List<BonificacionAsignada> bonificacionAsignadas;
 
     public UsuarioPropietario(String cedula, String contrasenia, String nombreCompleto, double saldoActual,
             double saldoMinimoAlerta) {
@@ -24,7 +27,8 @@ public class UsuarioPropietario extends Usuario {
         this.saldoActual = saldoActual;
         this.saldoMinimoAlerta = saldoMinimoAlerta;
         this.vehiculosPropietario = new ArrayList<Vehiculo>();
-        this.setEstado(new EstadoHabilitado());
+        //this.setEstado(new EstadoHabilitado());
+        this.bonificacionAsignadas = new ArrayList<BonificacionAsignada>();
     }
 
     public void agregarVehiculo(Vehiculo vehiculo1) throws VehiculoException {
@@ -41,4 +45,10 @@ public class UsuarioPropietario extends Usuario {
     public void setEstado(IEstadoPropietario nuevoEstado){
         this.estado = nuevoEstado;
     }
+
+    public void asignarBonificacion(Bonificacion bonificacionFrecuente, Puesto puesto) {
+        BonificacionAsignada nuevaBonificacion = new BonificacionAsignada(this, bonificacionFrecuente, puesto, LocalDate.now());
+        bonificacionAsignadas.add(nuevaBonificacion);
+    }
+
 }

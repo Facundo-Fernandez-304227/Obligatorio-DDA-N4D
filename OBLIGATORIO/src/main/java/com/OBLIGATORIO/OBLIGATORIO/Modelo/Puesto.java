@@ -1,5 +1,8 @@
 package com.OBLIGATORIO.OBLIGATORIO.Modelo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.Getter;
 
 public class Puesto {
@@ -8,10 +11,13 @@ public class Puesto {
     private String nombrePuesto;
     @Getter
     private String direccion;
+    @Getter
+    private List<TarifaPuesto> listaTarifaPuesto;
 
     public Puesto(String nombrePuesto, String direccion){
         this.nombrePuesto = nombrePuesto;
         this.direccion = direccion;
+        this.listaTarifaPuesto = new ArrayList<>();
     }
 
     
