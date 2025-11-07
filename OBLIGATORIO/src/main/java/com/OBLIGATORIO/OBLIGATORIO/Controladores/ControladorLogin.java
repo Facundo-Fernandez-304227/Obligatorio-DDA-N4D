@@ -26,17 +26,27 @@ public class ControladorLogin {
         Usuario usuarioLogueado = Fachada.getInstancia().login(cedula, contrasenia);
         // ESTO GUARDIA LA SESION DEL USUARIO
         sesionHttp.setAttribute("usuarioLogueado", usuarioLogueado);
-        
-        if (usuarioLogueado instanceof UsuarioAdministrador) {
+
+        if (usuarioLogueado instanceof UsuarioAdministrador administrador) {
             // Redirigir a la vista del administrador
-            return Respuesta.lista(new Respuesta("loginExitoso", "menuAdministrador.html"));
-        } else if (usuarioLogueado instanceof UsuarioPropietario) {
-            // Redirigir a la vista del propietario
-            return Respuesta.lista(new Respuesta("loginExitoso", "menuPropietario.html"));
+            return Respuesta.lista(new Respuesta("loginExitoso", "emularTransito.html"));
+        } else if (usuarioLogueado instanceof UsuarioPropietario propietario) {
+            try {
+                // Verifico el estado antes de permitir el acceso
+                if (!propietario.getEstado().puedeIngresarSistema()) {
+                    throw new UsuarioException("El propietario no tiene permiso para ingresar.");
+                }
+
+                sesionHttp.setAttribute("usuarioLogueado", propietario);
+                return Respuesta.lista(new Respuesta("loginExitoso", "menuPropietario.html"));
+
+            } catch (UsuarioException e) {
+                // Si el estado lanza una excepción (ej: deshabilitado)
+                return Respuesta.lista(new Respuesta("error", e.getMessage()));
+            }
         } else {
-            // Si por alguna razón no es ninguno.
             throw new UsuarioException("Tipo de usuario no reconocido. Acceso denegado.");
         }
-        
     }
+
 }

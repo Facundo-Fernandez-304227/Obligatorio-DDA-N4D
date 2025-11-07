@@ -7,7 +7,7 @@ import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
 
 public class PropietarioDTO {
     public String nombreCompleto;
-    // public String estadoPropietario;
+    public String estado;
     public double saldoActual;
     public List<VehiculoDTO> vehiculos;
     public List<BonificacionAsignadaDTO> bonificaciones;
@@ -19,7 +19,7 @@ public class PropietarioDTO {
         this.nombreCompleto = prop.getNombreCompleto();
 
         // ESTADO
-        // this.estadoPropietario = prop.getEstado();
+        this.estado = prop.getEstado().getNombre();
 
         // SALDO
         this.saldoActual = prop.getSaldoActual();

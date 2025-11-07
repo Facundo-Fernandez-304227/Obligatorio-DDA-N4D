@@ -3,8 +3,12 @@ package com.OBLIGATORIO.OBLIGATORIO.Modelo;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoDeshabilitado;
+import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoHabilitado;
+import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoPropietario;
+import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoSuspendido;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.VehiculoException;
-import com.OBLIGATORIO.OBLIGATORIO.Interfaces.IEstadoPropietario;
 
 import lombok.Getter;
 
@@ -17,17 +21,18 @@ public class UsuarioPropietario extends Usuario {
     @Getter
     private List<Vehiculo> vehiculosPropietario;
     @Getter
-    private IEstadoPropietario estado;
+    private EstadoPropietario estado;
     @Getter
     private List<BonificacionAsignada> bonificacionAsignadas;
 
+    
     public UsuarioPropietario(String cedula, String contrasenia, String nombreCompleto, double saldoActual,
             double saldoMinimoAlerta) {
         super(cedula, contrasenia, nombreCompleto);
         this.saldoActual = saldoActual;
         this.saldoMinimoAlerta = saldoMinimoAlerta;
         this.vehiculosPropietario = new ArrayList<Vehiculo>();
-        //this.setEstado(new EstadoHabilitado());
+        this.estado = new EstadoHabilitado();
         this.bonificacionAsignadas = new ArrayList<BonificacionAsignada>();
     }
 
@@ -42,13 +47,17 @@ public class UsuarioPropietario extends Usuario {
         vehiculo1.setUsuarioPropietario(this);
     }
 
-    public void setEstado(IEstadoPropietario nuevoEstado){
+    public void setEstado(EstadoPropietario nuevoEstado){
         this.estado = nuevoEstado;
     }
 
     public void asignarBonificacion(Bonificacion bonificacionFrecuente, Puesto puesto) {
         BonificacionAsignada nuevaBonificacion = new BonificacionAsignada(this, bonificacionFrecuente, puesto, LocalDate.now());
         bonificacionAsignadas.add(nuevaBonificacion);
+    }
+
+    public void setSaldoActual(double saldoFinal) {
+        this.saldoActual = saldoFinal;
     }
 
 }

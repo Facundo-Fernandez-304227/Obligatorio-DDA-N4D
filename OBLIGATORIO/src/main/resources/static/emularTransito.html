@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emular tránsito</title>
     <link rel="stylesheet" href="obligatorioCss.css">
-    <script src="vistaWeb.js"></script>
     <script src="utilesVista.js"></script>
+    <script src="vistaWeb.js"></script>
+
 </head>
 
 <body class="page-gestion-contactos">
@@ -93,7 +94,8 @@
                 onclick="window.location.href='asignarBonificacion.html'">
                 Asignar Bonificación
             </button>
-            <button type="submit" class="btn-CambiarEstado" id="btnCambiarEstado" onclick="window.location.href='estadoPropietario.html'">
+            <button type="submit" class="btn-CambiarEstado" id="btnCambiarEstado"
+                onclick="window.location.href='estadoPropietario.html'">
                 Cambiar estado propietario
             </button>
         </div>
@@ -106,28 +108,51 @@
 
         // Si hay un error con el servidor
         function procesarErrorSubmit(status, text) {
-            alert("Ocurrió un error al cargar la información del administrador.");
-            console.log("Código:", status);
-            console.log("Detalle:", text);
+            console.error("Código de error:", status);
+            console.error("Detalle del error:", text);
+
+            // Si la función mostrarMensaje existe (viene de utilesVista.js)
+            if (typeof mostrarMensaje === "function") {
+                let mensaje = "Ocurrió un error inesperado.";
+
+                try {
+                    // Intentar parsear si viene JSON con mensaje
+                    const respuesta = JSON.parse(text);
+                    if (respuesta && typeof respuesta === "object") {
+                        if (respuesta.message) mensaje = respuesta.message;
+                        else if (respuesta.error) mensaje = respuesta.error;
+                        else if (Array.isArray(respuesta) && respuesta[0]?.parametro)
+                            mensaje = respuesta[0].parametro;
+                    }
+                } catch (e) {
+                    // Si no es JSON, usar el texto plano
+                    if (text && text.trim().length > 0) mensaje = text;
+                }
+
+                mostrarMensaje(mensaje);
+            } else {
+                alert("Se produjo un error.\nDetalles: " + text);
+            }
         }
 
-        // Cuando llegan los datos iniciales del backend
-        function mostrar_iniciarVista(datos) {
-            // Cargar los puestos en el select
+
+
+        function mostrar_iniciarVista(puestos) {
+            console.log("Datos recibidos:", puestos);
+
             let combo = document.getElementById("puesto");
             combo.innerHTML = "<option value=''>Seleccionar...</option>";
 
-            if (datos.puestos && datos.puestos.length > 0) {
-                datos.puestos.forEach(p => {
+            if (puestos && puestos.length > 0) {
+                puestos.forEach(p => {
                     let opcion = document.createElement("option");
-                    opcion.value = p.id;
-                    opcion.textContent = p.nombre;
+                    opcion.value = p.nombrePuesto;
+                    opcion.textContent = p.nombrePuesto;
                     combo.appendChild(opcion);
                 });
             } else {
                 combo.innerHTML = "<option value=''>No hay puestos disponibles</option>";
             }
-
             // Si ya vienen tarifas por defecto, se muestran
             if (datos.tarifas && datos.tarifas.length > 0) {
                 mostrarTarifas(datos.tarifas);
@@ -164,7 +189,8 @@
             }
 
             // Pedir las tarifas del puesto seleccionado al backend
-            submit("/admin/tarifas", "idPuesto=" + encodeURIComponent(idPuesto), "GET");
+            submit("/admin/tarifas", "nombrePuesto=" + encodeURIComponent(idPuesto), "GET");
+
         });
 
         // Cuando llegan las tarifas del backend
@@ -192,6 +218,26 @@
             document.getElementById("resCosto").textContent = "$ " + info.costo.toFixed(2);
             document.getElementById("resSaldo").textContent = "$ " + info.saldo.toFixed(2);
         }
+
+        function mostrar_error(mensaje) {
+            console.error("Error recibido del backend:", mensaje);
+
+            // Si el mensaje viene como objeto, obtener el texto
+            if (mensaje && typeof mensaje === "object" && mensaje.contenido) {
+                mensaje = mensaje.contenido;
+            }
+
+            // Mostrar el modal blanco (usa tu propio diseño definido en utilesVista.js)
+            if (typeof mostrarMensaje === "function") {
+                mostrarMensaje(mensaje);
+            } else {
+                alert(mensaje); // fallback si no existe mostrarMensaje
+            }
+        }
+
+
+
+
     </script>
 
 

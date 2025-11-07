@@ -10,10 +10,14 @@ public class TarifaPuesto {
     @Getter
     private CategoriaVehiculo categoriaVehiculoPuesto;
 
+    @Getter
+    private Puesto puesto;
 
-    public TarifaPuesto(double montoPuesto, CategoriaVehiculo categoriaVehiculo){
+
+    public TarifaPuesto(double montoPuesto, CategoriaVehiculo categoriaVehiculo, Puesto puesto){
         this.montoPuesto = montoPuesto;
         this.categoriaVehiculoPuesto = categoriaVehiculo;
+        this.puesto = puesto;
         
     }
 }

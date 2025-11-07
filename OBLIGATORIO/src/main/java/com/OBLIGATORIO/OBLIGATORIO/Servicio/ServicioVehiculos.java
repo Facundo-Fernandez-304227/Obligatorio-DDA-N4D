@@ -58,4 +58,13 @@ public class ServicioVehiculos {
         vehiculoEncontrado.getTransitos().add(transito1);
     }
 
+    public Vehiculo buscarVehiculoPorMatricula(String matricula) throws VehiculoException {
+        for (Vehiculo vehiculo : vehiculos) {
+            if(vehiculo.getMatriculaVehiculo().equals(matricula)){
+                return vehiculo;
+            }
+        }
+        throw new VehiculoException("No se encontro vehiculo con esa matricula. -" + matricula);
+    }
+
 }

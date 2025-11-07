@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import com.OBLIGATORIO.OBLIGATORIO.Excepciones.PuestoException;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.UsuarioException;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.VehiculoException;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Bonificacion;
@@ -14,6 +15,7 @@ import com.OBLIGATORIO.OBLIGATORIO.Modelo.BonificacionFrecuente;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.BonificacionTrabajadores;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.CategoriaVehiculo;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Puesto;
+import com.OBLIGATORIO.OBLIGATORIO.Modelo.TarifaPuesto;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Transito;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioAdministrador;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
@@ -23,12 +25,12 @@ import com.OBLIGATORIO.OBLIGATORIO.Servicio.Fachada;
 @SpringBootApplication
 public class ObligatorioApplication {
 
-	public static void main(String[] args) throws VehiculoException, UsuarioException {
+	public static void main(String[] args) throws VehiculoException, UsuarioException, PuestoException {
 		SpringApplication.run(ObligatorioApplication.class, args);
 		precargaDeDatos();
 	}
 
-	public static void precargaDeDatos() throws VehiculoException, UsuarioException {
+	public static void precargaDeDatos() throws VehiculoException, UsuarioException, PuestoException {
 
 		UsuarioAdministrador admin1 = new UsuarioAdministrador("12345678", "admin.123", "Usuario Administrador");
 		Fachada.getInstancia().agregarAdministrador(admin1);
@@ -47,14 +49,24 @@ public class ObligatorioApplication {
 
 		Puesto puesto = new Puesto("Puesto - 111", "Ruta Interbalnearia");
 		Puesto puesto2 = new Puesto("Puesto - 222", "Ruta 5");
+
+		Fachada.getInstancia().agregarPuesto(puesto);
+		Fachada.getInstancia().agregarPuesto(puesto2);
+		
+		TarifaPuesto tarifaPuesto = new TarifaPuesto(100, categoriaAuto, puesto);
+		TarifaPuesto tarifaPuesto2 = new TarifaPuesto(150, categoriaCamioneta, puesto2);
+
+
+		Fachada.getInstancia().agregarTarifaPuesto(tarifaPuesto);
+		Fachada.getInstancia().agregarTarifaPuesto(tarifaPuesto2);
+
 		Bonificacion bonificacion = new BonificacionFrecuente();
 		Bonificacion bonificacion2 = new BonificacionTrabajadores();
 		Bonificacion bonificacion3 = new BonificacionExonerados();
 
-		Fachada.getInstancia().asignarBonificacion("23456789", bonificacion3, puesto);
+		Fachada.getInstancia().asignarBonificacion("23456789", bonificacion, puesto);
 
-		Transito transito1 = new Transito(LocalDate.of(2025, 9, 19), LocalTime.of(18, 45), 120.00, vehiculo1, puesto,
-				bonificacion3);
+		Transito transito1 = new Transito(LocalDate.of(2025, 9, 19), LocalTime.of(18, 45), 120.00, vehiculo1, puesto, bonificacion3);
 		Fachada.getInstancia().agregarTransito(transito1);
 	}
 }

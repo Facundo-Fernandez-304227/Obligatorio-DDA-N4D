@@ -20,5 +20,12 @@ public class Puesto {
         this.listaTarifaPuesto = new ArrayList<>();
     }
 
+    public void agregarTarifaPuesto(TarifaPuesto tarifaPuesto){
+        listaTarifaPuesto.add(tarifaPuesto);
+    }
+
+    public int getMontoPuesto() {
+        return listaTarifaPuesto.montoPuesto();
+    }
     
 }

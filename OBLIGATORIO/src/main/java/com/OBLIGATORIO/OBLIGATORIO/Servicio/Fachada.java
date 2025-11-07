@@ -1,9 +1,13 @@
 package com.OBLIGATORIO.OBLIGATORIO.Servicio;
 
+import java.util.List;
+
+import com.OBLIGATORIO.OBLIGATORIO.Excepciones.PuestoException;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.UsuarioException;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.VehiculoException;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Bonificacion;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Puesto;
+import com.OBLIGATORIO.OBLIGATORIO.Modelo.TarifaPuesto;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Transito;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Usuario;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioAdministrador;
@@ -15,6 +19,7 @@ public class Fachada {
     private static Fachada instancia;
     private ServicioUsuario servicioUsuario = new ServicioUsuario();
     private ServicioVehiculos servicioVehiculos = new ServicioVehiculos();
+    private ServicioPuesto servicioPuesto = new ServicioPuesto();
 
     private Fachada() {
     }
@@ -52,5 +57,25 @@ public class Fachada {
 
     public void asignarBonificacion(String cedulaPropietario, Bonificacion bonificacion, Puesto puesto) throws UsuarioException {
         servicioUsuario.asignarBonificacion(cedulaPropietario, bonificacion, puesto);
+    }
+
+    public void agregarPuesto(Puesto puesto) {
+        servicioPuesto.agregarPuesto(puesto);
+    }
+
+    public Vehiculo buscarVehiculoPorMatricula(String matricula) throws VehiculoException {
+        return servicioVehiculos.buscarVehiculoPorMatricula(matricula);
+    }
+
+    public List<Puesto> getPuestos() {
+       return servicioPuesto.getPuestos();
+    }
+
+    public Puesto buscarPuestoPorNombre(String nombrePuesto) {
+        return servicioPuesto.buscarPuestoPorNombre(nombrePuesto);
+    }
+
+    public void agregarTarifaPuesto(TarifaPuesto tarifaPuesto) throws PuestoException {
+        servicioPuesto.agregarTarifaPuesto(tarifaPuesto);
     }
 }
