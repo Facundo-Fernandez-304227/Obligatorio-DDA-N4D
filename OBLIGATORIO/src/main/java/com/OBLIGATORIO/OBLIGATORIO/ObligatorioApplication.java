@@ -38,6 +38,10 @@ public class ObligatorioApplication {
 		UsuarioPropietario propietario1 = new UsuarioPropietario("23456789", "prop.123", "Usuario Propietario", 2000,
 				500);
 		Fachada.getInstancia().agregarPropietario(propietario1);
+	
+	//esta bien esto??
+		Fachada.getInstancia().agregarObservador(propietario1);
+
 
 		CategoriaVehiculo categoriaAuto = new CategoriaVehiculo("Auto");
 		CategoriaVehiculo categoriaCamioneta = new CategoriaVehiculo("Camioneta");

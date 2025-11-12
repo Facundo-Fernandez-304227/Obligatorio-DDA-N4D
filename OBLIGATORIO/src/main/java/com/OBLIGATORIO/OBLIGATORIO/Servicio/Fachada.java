@@ -13,8 +13,9 @@ import com.OBLIGATORIO.OBLIGATORIO.Modelo.Usuario;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioAdministrador;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Vehiculo;
+import com.OBLIGATORIO.OBLIGATORIO.Observador.Observable;
 
-public class Fachada {
+public class Fachada extends Observable {
 
     private static Fachada instancia;
     private ServicioUsuario servicioUsuario = new ServicioUsuario();
@@ -78,4 +79,9 @@ public class Fachada {
     public void agregarTarifaPuesto(TarifaPuesto tarifaPuesto) throws PuestoException {
         servicioPuesto.agregarTarifaPuesto(tarifaPuesto);
     }
+
+    public void avisar(Object evento) {
+    super.avisar(evento); 
+}
+
 }

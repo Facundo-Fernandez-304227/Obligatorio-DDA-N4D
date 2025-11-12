@@ -1,17 +1,24 @@
 package com.OBLIGATORIO.OBLIGATORIO.Dtos;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
+import com.OBLIGATORIO.OBLIGATORIO.Modelo.*;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class PropietarioDTO {
-    public String nombreCompleto;
-    public String estado;
-    public double saldoActual;
-    public List<VehiculoDTO> vehiculos;
-    public List<BonificacionAsignadaDTO> bonificaciones;
-    public List<TransitosDTO> transitos;
+
+    private String nombreCompleto;
+    private String estado;
+    private double saldoActual;
+    private List<VehiculoDTO> vehiculos;
+    private List<BonificacionAsignadaDTO> bonificaciones;
+    private List<TransitosDTO> transitos;
+    private List<NotificacionDTO> notificaciones;
 
     public PropietarioDTO(UsuarioPropietario prop) {
 
@@ -25,34 +32,28 @@ public class PropietarioDTO {
         this.saldoActual = prop.getSaldoActual();
 
         // VEHICULOS
-        this.vehiculos = prop.getVehiculosPropietario().stream().map(VehiculoDTO::new).collect(Collectors.toList());
+        this.vehiculos = new ArrayList<>();
+        for (Vehiculo v : prop.getVehiculosPropietario()) {
+            this.vehiculos.add(new VehiculoDTO(v));
+        }
 
         // BONIFICACIONES
-        this.bonificaciones = prop.getBonificacionAsignadas().stream()
-                .map(BonificacionAsignadaDTO::new)
-                .collect(Collectors.toList());
+        this.bonificaciones = new ArrayList<>();
+                for (BonificacionAsignada b : prop.getBonificacionAsignadas()) {
+            this.bonificaciones.add(new BonificacionAsignadaDTO(b));
+        }
 
         // TRANSITOS
-        this.transitos = prop.getVehiculosPropietario().stream()
-                .flatMap(v -> v.getTransitos().stream())
-                .map(TransitosDTO::new)
-                .collect(Collectors.toList());
+        this.transitos = new ArrayList<>();
+              for (Vehiculo v : prop.getVehiculosPropietario()) {
+            for (Transito t : v.getTransitos()) {
+                   this.transitos.add(new TransitosDTO(t));
+            }
+        }
+        // NOTIFICACIONES
+        this.notificaciones = new ArrayList<>();
+        for (Notificacion n : prop.getNotificaciones()) {
+            this.notificaciones.add(new NotificacionDTO(n));
+        }
     }
-
-    public String getNombrePropietario() {
-        return nombreCompleto;
-    }
-
-    public double getSaldoActual() {
-        return saldoActual;
-    }
-
-    public String getNombreCompleto() {
-        return nombreCompleto;
-    }
-
-    public List<VehiculoDTO> getVehiculos() {
-        return vehiculos;
-    }
-
 }

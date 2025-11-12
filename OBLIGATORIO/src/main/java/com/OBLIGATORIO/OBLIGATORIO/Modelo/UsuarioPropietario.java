@@ -9,10 +9,12 @@ import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoHabilitado;
 import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoPropietario;
 import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoSuspendido;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.VehiculoException;
+import com.OBLIGATORIO.OBLIGATORIO.Observador.Observable;
+import com.OBLIGATORIO.OBLIGATORIO.Observador.Observador;
 
 import lombok.Getter;
 
-public class UsuarioPropietario extends Usuario {
+public class UsuarioPropietario extends Usuario implements Observador {
 
     @Getter
     private double saldoActual;
@@ -25,6 +27,8 @@ public class UsuarioPropietario extends Usuario {
     @Getter
     private List<BonificacionAsignada> bonificacionAsignadas;
 
+    @Getter List<Notificacion> notificaciones;
+
     
     public UsuarioPropietario(String cedula, String contrasenia, String nombreCompleto, double saldoActual,
             double saldoMinimoAlerta) {
@@ -34,6 +38,7 @@ public class UsuarioPropietario extends Usuario {
         this.vehiculosPropietario = new ArrayList<Vehiculo>();
         this.estado = new EstadoHabilitado();
         this.bonificacionAsignadas = new ArrayList<BonificacionAsignada>();
+        this.notificaciones = new ArrayList<Notificacion>();
     }
 
     public void agregarVehiculo(Vehiculo vehiculo1) throws VehiculoException {
@@ -59,5 +64,16 @@ public class UsuarioPropietario extends Usuario {
     public void setSaldoActual(double saldoFinal) {
         this.saldoActual = saldoFinal;
     }
+
+     @Override
+    public void actualizar(Observable observable, Object evento) {
+       if (evento instanceof Notificacion noti) {
+           notificaciones.add(noti);
+    //VERIFICAR SE HAYA CARGADO
+        System.out.println("Lista de notificaciones del propietario:");
+        for (Notificacion n : notificaciones) {
+            System.out.println(n.getFechaEnvio() + " - " + n.getMensaje());
+        }}       }
+
 
 }

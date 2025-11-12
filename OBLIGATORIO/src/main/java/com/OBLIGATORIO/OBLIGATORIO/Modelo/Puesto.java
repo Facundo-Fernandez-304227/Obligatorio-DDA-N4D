@@ -23,9 +23,9 @@ public class Puesto {
     public void agregarTarifaPuesto(TarifaPuesto tarifaPuesto){
         listaTarifaPuesto.add(tarifaPuesto);
     }
-
-    public int getMontoPuesto() {
+/* 
+    public double getMontoPuesto() {
         return listaTarifaPuesto.montoPuesto();
     }
-    
+    */
 }

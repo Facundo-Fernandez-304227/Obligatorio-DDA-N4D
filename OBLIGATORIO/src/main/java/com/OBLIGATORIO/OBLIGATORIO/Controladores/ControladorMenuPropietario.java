@@ -1,14 +1,21 @@
 package com.OBLIGATORIO.OBLIGATORIO.Controladores;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
+import com.OBLIGATORIO.OBLIGATORIO.Dtos.NotificacionDTO;
 import com.OBLIGATORIO.OBLIGATORIO.Dtos.PropietarioDTO;
+import com.OBLIGATORIO.OBLIGATORIO.Modelo.Notificacion;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Vehiculo;
+import com.OBLIGATORIO.OBLIGATORIO.Servicio.ServicioUsuario;
 import com.OBLIGATORIO.OBLIGATORIO.Utils.Respuesta;
 
 import jakarta.servlet.http.HttpSession;
@@ -43,4 +50,21 @@ public class ControladorMenuPropietario {
         return Respuesta.lista(new Respuesta("tablero", dto));
 
     }
+
+
+@GetMapping("/notificaciones")
+public List<NotificacionDTO> obtenerNotificaciones(
+        @SessionAttribute("usuarioLogueado") UsuarioPropietario propietario) {
+
+    List<NotificacionDTO> notiDTOs = new ArrayList<>();
+    for (Notificacion n : propietario.getNotificaciones()) {
+        NotificacionDTO dto = new NotificacionDTO();
+        dto.setFechaEnvio(n.getFechaEnvio());
+        dto.setMensaje(n.getMensaje());
+        notiDTOs.add(dto);
+    }
+
+    return notiDTOs;
+}
+
 }
