@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.OBLIGATORIO.OBLIGATORIO.Dtos.PuestoDTO;
 import com.OBLIGATORIO.OBLIGATORIO.Dtos.TarifaPuestoDTO;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.PuestoException;
+import com.OBLIGATORIO.OBLIGATORIO.Excepciones.UsuarioException;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.VehiculoException;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Bonificacion;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Puesto;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.TarifaPuesto;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Transito;
+import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Vehiculo;
 import com.OBLIGATORIO.OBLIGATORIO.Servicio.Fachada;
 import com.OBLIGATORIO.OBLIGATORIO.Utils.Respuesta;
@@ -77,6 +79,19 @@ public class ControladorEmularTransito {
             if (vehiculo == null) {
                 return Respuesta
                         .lista(new Respuesta("error", "No se encontró el vehículo con matrícula: " + matricula));
+            }
+
+            // 2.1️⃣ Validar estado del propietario (State)
+            UsuarioPropietario propietario = vehiculo.getUsuarioPropietario();
+
+            try {
+                if (!propietario.getEstado().puedeRealizarTransitos()) {
+                    return Respuesta.lista(new Respuesta("error",
+                            "El propietario está en estado '" + propietario.getEstado().getNombre()
+                                    + "' y no puede realizar transitos."));
+                }
+            } catch (UsuarioException e) {
+                return Respuesta.lista(new Respuesta("error", e.getMessage()));
             }
 
             // 3️⃣ Obtener la tarifa correspondiente

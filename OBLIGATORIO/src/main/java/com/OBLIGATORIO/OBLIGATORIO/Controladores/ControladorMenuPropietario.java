@@ -51,20 +51,19 @@ public class ControladorMenuPropietario {
 
     }
 
+    @GetMapping("/notificaciones")
+    public List<NotificacionDTO> obtenerNotificaciones(
+            @SessionAttribute("usuarioLogueado") UsuarioPropietario propietario) {
 
-@GetMapping("/notificaciones")
-public List<NotificacionDTO> obtenerNotificaciones(
-        @SessionAttribute("usuarioLogueado") UsuarioPropietario propietario) {
+        List<NotificacionDTO> notiDTOs = new ArrayList<>();
+        for (Notificacion n : propietario.getNotificaciones()) {
+            NotificacionDTO dto = new NotificacionDTO();
+            dto.setFechaEnvio(n.getFechaEnvio());
+            dto.setMensaje(n.getMensaje());
+            notiDTOs.add(dto);
+        }
 
-    List<NotificacionDTO> notiDTOs = new ArrayList<>();
-    for (Notificacion n : propietario.getNotificaciones()) {
-        NotificacionDTO dto = new NotificacionDTO();
-        dto.setFechaEnvio(n.getFechaEnvio());
-        dto.setMensaje(n.getMensaje());
-        notiDTOs.add(dto);
+        return notiDTOs;
     }
-
-    return notiDTOs;
-}
 
 }

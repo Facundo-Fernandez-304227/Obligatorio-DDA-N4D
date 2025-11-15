@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.UsuarioException;
+import com.OBLIGATORIO.OBLIGATORIO.Interfaces.Usuario;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Bonificacion;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Puesto;
-import com.OBLIGATORIO.OBLIGATORIO.Modelo.Usuario;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioAdministrador;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
 
@@ -24,7 +24,7 @@ public class ServicioUsuario {
 
     public Usuario login(String cedula, String contrasenia) throws UsuarioException {
         for (Usuario u : usuarios) {
-            if (u.getCedula().equals(cedula) && u.contraseniaValida(contrasenia)) {
+            if (u.getCedula().equals(cedula) && u.getContrasenia().equals(contrasenia)) {
                 return u;
             }
         }
@@ -61,6 +61,8 @@ public class ServicioUsuario {
         }
         
         propietario.asignarBonificacion(bonificacion, puesto);
+
+        //VERIFICAR QUE NO TENGA ESA BONIFICACION YA
         
     }
 

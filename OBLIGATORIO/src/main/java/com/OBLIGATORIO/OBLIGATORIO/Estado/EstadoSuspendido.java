@@ -26,7 +26,7 @@ public class EstadoSuspendido extends EstadoPropietario {
 
     @Override
     public String getNombre() {
-       return "Suspendido.";
+       return "Suspendido";
     }
     
 }

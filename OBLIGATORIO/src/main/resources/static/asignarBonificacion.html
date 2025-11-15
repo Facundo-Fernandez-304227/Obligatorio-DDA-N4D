@@ -17,7 +17,7 @@
         <!-- Título -->
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>Asignar bonificaciones</h2>
-            <a href="login.html" style="color: #b91c1c; font-weight: bold; text-decoration: none;">Salir</a>
+            <a href="index.html" style="color: #b91c1c; font-weight: bold; text-decoration: none;">Salir</a>
         </div>
 
         <!-- Formulario principal -->
@@ -94,10 +94,12 @@
 
         <h4>Otras opciones:</h4>
         <div style="display: flex; gap: 10px; margin-top: 40px;">
-            <button type="button" class="btn-MenuAdministrador" id="btnMenuAdministrador" onclick="window.location.href='emularTransito.html'">
+            <button type="button" class="btn-MenuAdministrador" id="btnMenuAdministrador"
+                onclick="window.location.href='emularTransito.html'">
                 Emular Transito
             </button>
-            <button type="submit" class="btn-CambiarEstado" id="btnCambiarEstado" onclick="window.location.href='estadoPropietario.html'">
+            <button type="submit" class="btn-CambiarEstado" id="btnCambiarEstado"
+                onclick="window.location.href='estadoPropietario.html'">
                 Cambiar estado propietario
             </button>
         </div>
@@ -123,25 +125,24 @@
             if (datos.bonificaciones && datos.bonificaciones.length > 0) {
                 datos.bonificaciones.forEach(b => {
                     let opcion = document.createElement("option");
-                    opcion.value = b.id;
+                    opcion.value = b.nombre;          // ✅ AHORA VA EL NOMBRE
                     opcion.textContent = b.nombre;
                     listaBonificaciones.appendChild(opcion);
                 });
             }
-
+            
             // Puestos
             let listaPuestos = document.getElementById("puesto");
             listaPuestos.innerHTML = "<option value=''>Seleccionar...</option>";
 
-            if (datos.puestos && datos.puestos.length > 0) {
-                datos.puestos.forEach(p => {
-                    let opcion = document.createElement("option");
-                    opcion.value = p.id;
-                    opcion.textContent = p.nombre;
-                    listaPuestos.appendChild(opcion);
-                });
-            }
+            datos.puestos.forEach(p => {
+                let opcion = document.createElement("option");
+                opcion.value = p.nombrePuesto;
+                opcion.textContent = p.nombrePuesto;
+                listaPuestos.appendChild(opcion);
+            });
         }
+
 
         // Buscar propietario
         document.getElementById("btnBuscar").onclick = function () {
@@ -157,7 +158,7 @@
 
         // Mostrar datos del propietario y sus bonificaciones
         function mostrar_buscarPropietario(datos) {
-            document.getElementById("nombreProp").textContent = datos.nombre || "---";
+            document.getElementById("nombreProp").textContent = datos.nombreCompleto || "---";
             document.getElementById("estadoProp").textContent = datos.estado || "---";
 
             if (datos.bonificaciones && datos.bonificaciones.length > 0) {

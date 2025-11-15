@@ -9,13 +9,20 @@ import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoHabilitado;
 import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoPropietario;
 import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoSuspendido;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.VehiculoException;
+import com.OBLIGATORIO.OBLIGATORIO.Interfaces.Usuario;
 import com.OBLIGATORIO.OBLIGATORIO.Observador.Observable;
 import com.OBLIGATORIO.OBLIGATORIO.Observador.Observador;
 
 import lombok.Getter;
 
-public class UsuarioPropietario extends Usuario implements Observador {
+public class UsuarioPropietario implements Usuario, Observador {
 
+    @Getter
+    private String cedula;
+    @Getter
+    private String contrasenia;
+    @Getter
+    private String nombreCompleto;
     @Getter
     private double saldoActual;
     @Getter
@@ -26,13 +33,16 @@ public class UsuarioPropietario extends Usuario implements Observador {
     private EstadoPropietario estado;
     @Getter
     private List<BonificacionAsignada> bonificacionAsignadas;
+    @Getter
+    List<Notificacion> notificaciones;
 
-    @Getter List<Notificacion> notificaciones;
 
-    
+
     public UsuarioPropietario(String cedula, String contrasenia, String nombreCompleto, double saldoActual,
             double saldoMinimoAlerta) {
-        super(cedula, contrasenia, nombreCompleto);
+        this.cedula = cedula;
+        this.contrasenia = contrasenia;
+        this.nombreCompleto = nombreCompleto;
         this.saldoActual = saldoActual;
         this.saldoMinimoAlerta = saldoMinimoAlerta;
         this.vehiculosPropietario = new ArrayList<Vehiculo>();
@@ -52,12 +62,14 @@ public class UsuarioPropietario extends Usuario implements Observador {
         vehiculo1.setUsuarioPropietario(this);
     }
 
-    public void setEstado(EstadoPropietario nuevoEstado){
+    public void setEstado(EstadoPropietario nuevoEstado) {
         this.estado = nuevoEstado;
+        nuevoEstado.setPropietario(this);
     }
 
     public void asignarBonificacion(Bonificacion bonificacionFrecuente, Puesto puesto) {
-        BonificacionAsignada nuevaBonificacion = new BonificacionAsignada(this, bonificacionFrecuente, puesto, LocalDate.now());
+        BonificacionAsignada nuevaBonificacion = new BonificacionAsignada(this, bonificacionFrecuente, puesto,
+                LocalDate.now());
         bonificacionAsignadas.add(nuevaBonificacion);
     }
 
@@ -65,15 +77,16 @@ public class UsuarioPropietario extends Usuario implements Observador {
         this.saldoActual = saldoFinal;
     }
 
-     @Override
+    @Override
     public void actualizar(Observable observable, Object evento) {
-       if (evento instanceof Notificacion noti) {
-           notificaciones.add(noti);
-    //VERIFICAR SE HAYA CARGADO
-        System.out.println("Lista de notificaciones del propietario:");
-        for (Notificacion n : notificaciones) {
-            System.out.println(n.getFechaEnvio() + " - " + n.getMensaje());
-        }}       }
-
+        if (evento instanceof Notificacion noti) {
+            notificaciones.add(noti);
+            // VERIFICAR SE HAYA CARGADO
+            System.out.println("Lista de notificaciones del propietario:");
+            for (Notificacion n : notificaciones) {
+                System.out.println(n.getFechaEnvio() + " - " + n.getMensaje());
+            }
+        }
+    }
 
 }

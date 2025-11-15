@@ -17,7 +17,7 @@
         <!-- Título -->
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2>Cambiar estado de propietario</h2>
-            <a href="login.html" style="color: #b91c1c; font-weight: bold; text-decoration: none;">Salir</a>
+            <a href="index.html" style="color: #b91c1c; font-weight: bold; text-decoration: none;">Salir</a>
         </div>
 
         <!-- Descripción -->
@@ -90,15 +90,26 @@
             let selectEstado = document.getElementById("estadoNuevo");
             selectEstado.innerHTML = "<option value=''>Seleccionar...</option>";
 
-            if (datos.estados && datos.estados.length > 0) {
-                datos.estados.forEach(e => {
-                    let option = document.createElement("option");
-                    option.value = e.id;
-                    option.textContent = e.nombre;
-                    selectEstado.appendChild(option);
-                });
+            datos.estados.forEach(e => {
+                let option = document.createElement("option");
+                option.value = e.nombre;
+                option.textContent = e.nombre;
+                selectEstado.appendChild(option);
+            });
+        }
+
+
+        function seleccionarEstadoActual(estado) {
+            let selectEstado = document.getElementById("estadoNuevo");
+
+            for (let i = 0; i < selectEstado.options.length; i++) {
+                if (selectEstado.options[i].text === estado) {
+                    selectEstado.selectedIndex = i;
+                    break;
+                }
             }
         }
+
 
         // Botón buscar propietario
         document.getElementById("btnBuscar").onclick = function () {
@@ -114,17 +125,13 @@
 
         // Mostrar los datos del propietario
         function mostrar_buscarPropietarioEstado(datos) {
+
             document.getElementById("nombreProp").textContent = datos.nombre || "---";
             document.getElementById("estadoActual").textContent = datos.estado || "---";
 
-            // Mostrar estado actual preseleccionado si existe
-            let selectEstado = document.getElementById("estadoNuevo");
-            for (let i = 0; i < selectEstado.options.length; i++) {
-                if (selectEstado.options[i].text === datos.estado) {
-                    selectEstado.selectedIndex = i;
-                    break;
-                }
-            }
+            ultimoEstadoBuscado = datos.estado;  // ⬅ guardar el estado
+
+            seleccionarEstadoActual(datos.estado); // ⬅ preseleccionar
         }
 
         // Botón cambiar estado

@@ -26,7 +26,7 @@ public class EstadoPenalizado extends EstadoPropietario {
 
     @Override
     public String getNombre() {
-        return "Penalizado.";
+        return "Penalizado";
     }
     
 }

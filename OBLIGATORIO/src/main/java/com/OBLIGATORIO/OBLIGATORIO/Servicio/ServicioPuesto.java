@@ -8,6 +8,7 @@ import com.OBLIGATORIO.OBLIGATORIO.Modelo.Puesto;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.TarifaPuesto;
 
 public class ServicioPuesto {
+    
     private List<Puesto> puestos = new ArrayList<>();
 
     public void agregarPuesto(Puesto puesto) {
@@ -32,7 +33,7 @@ public class ServicioPuesto {
     }
 
     public void agregarTarifaPuesto(TarifaPuesto tarifaPuesto) throws PuestoException {
-        if(tarifaPuesto.getPuesto() == null || tarifaPuesto == null){
+        if (tarifaPuesto.getPuesto() == null || tarifaPuesto == null) {
             throw new PuestoException("El puesto no puede ser vacio.");
         }
 
