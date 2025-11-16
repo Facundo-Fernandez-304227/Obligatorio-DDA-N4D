@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.OBLIGATORIO.OBLIGATORIO.Dtos.PuestoDTO;
 import com.OBLIGATORIO.OBLIGATORIO.Dtos.TarifaPuestoDTO;
-import com.OBLIGATORIO.OBLIGATORIO.Excepciones.PuestoException;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.UsuarioException;
-import com.OBLIGATORIO.OBLIGATORIO.Excepciones.VehiculoException;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Bonificacion;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Puesto;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.TarifaPuesto;
