@@ -62,10 +62,7 @@ public class ControladorEmularTransito {
     }
 
     @PostMapping("/emularTransito")
-    public List<Respuesta> emularTransito(
-            @RequestParam String puesto,
-            @RequestParam String matricula,
-            @RequestParam String fechaHora) {
+    public List<Respuesta> emularTransito( @RequestParam String puesto, @RequestParam String matricula, @RequestParam String fechaHora) {
 
         try {
             // 1️⃣ Buscar el puesto por nombre
@@ -116,8 +113,7 @@ public class ControladorEmularTransito {
                     .orElse(null);
 
             // 6️⃣ Crear tránsito
-            Transito transito = new Transito(fecha, hora, tarifa.getMontoPuesto(), vehiculo, puestoSeleccionado,
-                    bonificacionAplicada);
+            Transito transito = new Transito(fecha, hora, tarifa.getMontoPuesto(), vehiculo, puestoSeleccionado, bonificacionAplicada);
 
             // 7️⃣ Agregarlo
             Fachada.getInstancia().agregarTransito(transito);

@@ -32,21 +32,23 @@ import com.OBLIGATORIO.OBLIGATORIO.Servicio.Fachada;
 @SpringBootApplication
 public class ObligatorioApplication {
 
-	public static void main(String[] args) throws VehiculoException, UsuarioException, PuestoException, BonificacionException, EstadoException {
+	public static void main(String[] args)
+		throws VehiculoException, UsuarioException, PuestoException, BonificacionException, EstadoException {
 		SpringApplication.run(ObligatorioApplication.class, args);
 		precargaDeDatos();
 	}
 
-	public static void precargaDeDatos() throws VehiculoException, UsuarioException, PuestoException, BonificacionException, EstadoException {
+	public static void precargaDeDatos()
+			throws VehiculoException, UsuarioException, PuestoException, BonificacionException, EstadoException {
 
 		UsuarioAdministrador admin1 = new UsuarioAdministrador("12345678", "admin.123", "Usuario Administrador");
 		Fachada.getInstancia().agregarAdministrador(admin1);
 
-		UsuarioPropietario propietario1 = new UsuarioPropietario("23456789", "prop.123", "Usuario Propietario", 2000,
-				500);
+		UsuarioPropietario propietario1 = new UsuarioPropietario("23456789", "prop.123", "Usuario Propietario", 2000, 500);
+
 		Fachada.getInstancia().agregarPropietario(propietario1);
 
-		// esta bien esto??
+		//esta bien esto??
 		Fachada.getInstancia().agregarObservador(propietario1);
 
 		CategoriaVehiculo categoriaAuto = new CategoriaVehiculo("Auto");
@@ -77,7 +79,7 @@ public class ObligatorioApplication {
 		Fachada.getInstancia().agregarBonificacion(bonificacion2);
 		Fachada.getInstancia().agregarBonificacion(bonificacion3);
 
-		//Fachada.getInstancia().asignarBonificacion("23456789", bonificacion, puesto);
+		// Fachada.getInstancia().asignarBonificacion("23456789", bonificacion, puesto);
 
 		Transito transito1 = new Transito(LocalDate.of(2025, 9, 19), LocalTime.of(18, 45), 120.00, vehiculo1, puesto, bonificacion3);
 		Fachada.getInstancia().agregarTransito(transito1);

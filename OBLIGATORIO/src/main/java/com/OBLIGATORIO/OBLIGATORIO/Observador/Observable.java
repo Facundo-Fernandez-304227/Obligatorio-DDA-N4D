@@ -6,6 +6,7 @@ public class Observable {
     private ArrayList<Observador> observadores = new ArrayList<>();
 
     public void agregarObservador(Observador observador) {
+        
         if (!observadores.contains(observador)) {
             observadores.add(observador);
         }
@@ -17,6 +18,7 @@ public class Observable {
     }
 
     public void avisar(Object evento) {
+        
         ArrayList<Observador> copiaObservador = new ArrayList<>(observadores);
         for (Observador observador : copiaObservador) {
             observador.actualizar(this, evento);

@@ -36,8 +36,6 @@ public class UsuarioPropietario implements Usuario, Observador {
     @Getter
     List<Notificacion> notificaciones;
 
-
-
     public UsuarioPropietario(String cedula, String contrasenia, String nombreCompleto, double saldoActual,
             double saldoMinimoAlerta) {
         this.cedula = cedula;
@@ -58,7 +56,6 @@ public class UsuarioPropietario implements Usuario, Observador {
             }
         }
         vehiculosPropietario.add(vehiculo1);
-        // Le setteamos el usuario al vehiculo.
         vehiculo1.setUsuarioPropietario(this);
     }
 
@@ -81,8 +78,6 @@ public class UsuarioPropietario implements Usuario, Observador {
     public void actualizar(Observable observable, Object evento) {
         if (evento instanceof Notificacion noti) {
             notificaciones.add(noti);
-            // VERIFICAR SE HAYA CARGADO
-            System.out.println("Lista de notificaciones del propietario:");
             for (Notificacion n : notificaciones) {
                 System.out.println(n.getFechaEnvio() + " - " + n.getMensaje());
             }
