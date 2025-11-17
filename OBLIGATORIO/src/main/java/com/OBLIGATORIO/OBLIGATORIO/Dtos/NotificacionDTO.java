@@ -12,13 +12,15 @@ import lombok.Setter;
 public class NotificacionDTO {
         
     private String mensaje;
-    private LocalDateTime fechaEnvio;
+    private String fechaEnvio;
+
+  //SE MODIFICA EL ATRIBUTO FECHA ENVIO A STR Y SE OBTIENE DE NOTIFICACION EL LOCAL DATE TIME FORMATEADO EN STRING PARA QUE NO ROMPA SERIALIZADOR DE JSON EN CONEXION NAVEGADOR.
 
     public NotificacionDTO(){}
 
     public NotificacionDTO(Notificacion notificacion) {
         this.mensaje = notificacion.getMensaje();
-      this.fechaEnvio = notificacion.getFechaEnvio();
+      this.fechaEnvio = notificacion.getFechaEnvioStr();
     }
      
 }

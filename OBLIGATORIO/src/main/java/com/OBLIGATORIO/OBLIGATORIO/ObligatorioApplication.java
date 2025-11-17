@@ -48,8 +48,11 @@ public class ObligatorioApplication {
 
 		Fachada.getInstancia().agregarPropietario(propietario1);
 
+<<<<<<< HEAD
 		//esta bien esto??
 		Fachada.getInstancia().agregarObservador(propietario1);
+=======
+>>>>>>> 5464db1f99acfd404cb3a060add250796c38481c
 
 		CategoriaVehiculo categoriaAuto = new CategoriaVehiculo("Auto");
 		CategoriaVehiculo categoriaCamioneta = new CategoriaVehiculo("Camioneta");

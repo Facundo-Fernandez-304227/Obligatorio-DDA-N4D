@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emular tránsito</title>
     <link rel="stylesheet" href="obligatorioCss.css">
-    <script src="utilesVista.js"></script>
+    <script src="utilesVista.js" defer></script>
     <script src="vistaWeb.js"></script>
 
 </head>
@@ -138,7 +138,7 @@
 
 
         function mostrar_iniciarVista(puestos) {
-            console.log("Datos recibidos:", puestos);
+          //  console.log("Datos recibidos:", puestos);
 
             let combo = document.getElementById("puesto");
             combo.innerHTML = "<option value=''>Seleccionar...</option>";
@@ -153,10 +153,7 @@
             } else {
                 combo.innerHTML = "<option value=''>No hay puestos disponibles</option>";
             }
-            // Si ya vienen tarifas por defecto, se muestran
-            if (datos.tarifas && datos.tarifas.length > 0) {
-                mostrarTarifas(datos.tarifas);
-            }
+
         }
 
         // Función para mostrar las tarifas en la tabla

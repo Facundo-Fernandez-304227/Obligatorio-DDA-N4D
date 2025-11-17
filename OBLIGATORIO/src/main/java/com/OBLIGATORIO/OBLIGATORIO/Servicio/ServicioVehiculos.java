@@ -3,6 +3,8 @@ package com.OBLIGATORIO.OBLIGATORIO.Servicio;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
+
+import com.OBLIGATORIO.OBLIGATORIO.Dtos.NotificacionDTO;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.VehiculoException;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Notificacion;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Transito;

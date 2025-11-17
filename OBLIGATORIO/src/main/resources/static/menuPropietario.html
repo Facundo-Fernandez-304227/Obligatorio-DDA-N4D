@@ -6,8 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tablero de control del propietario</title>
   <link rel="stylesheet" href="obligatorioCss.css">
-  <script src="utilesVista.js"></script>
+  <script src="utilesVista.js" defer></script>
   <script src="vistaWeb.js"></script>
+  <script src="sse.js"></script>
+
 
 </head>
 
@@ -74,6 +76,59 @@
   <script>
     // Al cargar la página pide los datos al backend
     urlIniciarVista = "/propietario/tablero";
+    urlRegistroSSE="/propietario/registrarSSE";
+
+
+function procesarMensajeSSE(mensaje) {
+  
+     agregarNotificacionATabla(mensaje);
+
+}
+
+    // esto del IFRAME va solo si quiero renderizar otro html dentro de mi html, en realidad nosotros solo queremos insertar los datos que ya nos trajo el SSEE
+    //En nuestro caso SSEE se conecta a la vista propietario que es quien recibe las notificaciones, no necesitamos que quede activa una session siempre porque este
+    //Menu solo tiene un html. En el caso de la agenda era porque se iban renderizando diferentes html entonces la conexion SSEE se "dejaba viva" en el menu principal.
+/*
+  console.log("Mensaje SSE recibido en menuPropietario.html:", mensaje);
+            var iframe = document.getElementById('contenidoFrame');
+            var iframeWindow = iframe.contentWindow;
+            iframeWindow.procesarResultadosSubmit(mensaje); //asumo que el iFrame tiene vistaWeb.js incluida
+      */
+                
+function agregarNotificacionATabla(noti) {
+    const cont = document.getElementById("tablaNotificaciones");
+
+    // Si no hay tabla, la creo
+    if (!cont.querySelector("table")) {
+        cont.innerHTML = crearTablaDesdeJson([noti]); 
+        return;
+    }
+
+    // Agregar solo una fila.
+    const tabla = cont.querySelector("table");
+    const tbody = tabla.querySelector("tbody");
+
+    // Crear nueva fila
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+        <td>${noti.mensaje}</td>
+        <td>${noti.fechaEnvio}</td>
+    `;
+//Agrego la noti como hija
+    tbody.appendChild(tr);
+}
+
+
+
+
+
+         //Se ejecuta cuando se cierra la conexion desde el servidor
+        //Si no se define esta funcion, por defecto se "borra" la pagina 
+        function conexionSSECerrada(event){
+              cerrar();
+        }
+
 
     function procesarErrorSubmit(status, text) {
       alert("Error al cargar el tablero (" + status + ")");
@@ -82,7 +137,9 @@
 
     // Cargar los datos del propietario
     function mostrar_tablero(datos) {
-      console.log("Datos recibidos en mostrar_tablero:", datos);
+
+ console.log("Datos recibidos en mostrar_tablero:", datos);
+  console.log("Notificaciones en DTO: ", datos.notificaciones);
 
 
       document.getElementById("nombreCompleto").textContent = datos.nombreCompleto || "---";
@@ -110,15 +167,25 @@
           : "<p>No hay notificaciones para mostrar.</p>";
     }
 
+function mostrar_notificacionesBorradas(mensaje) {
+//VACIO TABLA EN DOM
+  document.getElementById("tablaNotificaciones").innerHTML =
+    "<p>No hay notificaciones para mostrar.</p>";
 
+    //VER ESTO REVISAR
+    if (typeof mostrarMensaje === "function") {
+    mostrarMensaje(mensaje); // "Se borraron las notificaciones correctamente."
+  } else {
+    alert(mensaje); // fallback por las dudas
+  }
+}
 
-    //EDITAR, ESTO TIENE UQE OBRRAR LAS NOTIFICACIONES EN EL BACKEND
+    //OBRRAR LAS NOTIFICACIONES EN EL BACKEND
 
-    // Botón borrar notificaciones (simple)
-    document.getElementById("btnBorrarNotificaciones").onclick = function () {
-      document.getElementById("tablaNotificaciones").innerHTML = "<p>No hay notificaciones para mostrar.</p>";
-      alert("Se borraron las notificaciones correctamente.");
-    };
+document.getElementById("btnBorrarNotificaciones").onclick = function () {
+
+  submit("/propietario/borrarNotificaciones", "");
+};
   </script>
 
 </body>

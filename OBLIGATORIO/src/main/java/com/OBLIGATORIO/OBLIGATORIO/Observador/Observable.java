@@ -21,6 +21,7 @@ public class Observable {
         
         ArrayList<Observador> copiaObservador = new ArrayList<>(observadores);
         for (Observador observador : copiaObservador) {
+            System.out.println("Avisando a observador: " + observador.getClass().getSimpleName() + "En observador");
             observador.actualizar(this, evento);
         }
     }

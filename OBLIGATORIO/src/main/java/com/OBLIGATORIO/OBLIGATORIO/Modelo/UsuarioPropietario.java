@@ -4,10 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoDeshabilitado;
 import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoHabilitado;
 import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoPropietario;
-import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoSuspendido;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.VehiculoException;
 import com.OBLIGATORIO.OBLIGATORIO.Interfaces.Usuario;
 import com.OBLIGATORIO.OBLIGATORIO.Observador.Observable;
@@ -73,6 +71,11 @@ public class UsuarioPropietario implements Usuario, Observador {
     public void setSaldoActual(double saldoFinal) {
         this.saldoActual = saldoFinal;
     }
+        
+        public void limpiarNotificaciones() {
+         notificaciones.clear();
+        }
+
 
     @Override
     public void actualizar(Observable observable, Object evento) {
