@@ -1,6 +1,7 @@
 package com.OBLIGATORIO.OBLIGATORIO.Modelo;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import lombok.Getter;
@@ -38,6 +39,10 @@ public class Transito {
 
     public double getMontoBonificacion() {
         return montoTransito - getMontoPagado();
+    }
+
+    public Notificacion generarNotificacion() {
+        return new Notificacion(LocalDateTime.now(), "Pasaste por el puesto: " + puesto.getNombrePuesto() +  " con el vehículo " + vehiculo.getMatriculaVehiculo());
     }
 
 }

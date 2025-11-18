@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asignar bonificaciones</title>
     <link rel="stylesheet" href="obligatorioCss.css">
+    <script src="utilesVista.js" defer></script>
     <script src="vistaWeb.js"></script>
-    <script src="utilesVista.js"></script>
 </head>
 
 <body class="page-gestion-contactos">
@@ -143,13 +143,20 @@
             });
         }
 
+        function mostrar_error(mensaje) {
+            if (typeof mostrarMensaje === "function") {
+                mostrarMensaje(mensaje);
+            } else {
+                alert(mensaje);
+            }
+        }
 
         // Buscar propietario
         document.getElementById("btnBuscar").onclick = function () {
             let cedula = document.getElementById("cedula").value.trim();
 
             if (cedula === "") {
-                alert("Debe ingresar una cédula para buscar al propietario.");
+                mostrarMensaje("Debe ingresar una cédula para buscar al propietario.");
                 return;
             }
 
@@ -175,7 +182,7 @@
             let puesto = document.getElementById("puesto").value;
 
             if (cedula === "" || bonificacion === "" || puesto === "") {
-                alert("Debe completar todos los campos antes de asignar.");
+                mostrarMensaje("Debe completar todos los campos antes de asignar.");
                 return;
             }
 
@@ -188,7 +195,7 @@
 
         // Cuando se asigna correctamente
         function mostrar_asignarBonificacion(mensaje) {
-            alert("Bonificación asignada correctamente.");
+            mostrarMensaje("Bonificación asignada correctamente.");
             // Refrescar los datos del propietario
             document.getElementById("btnBuscar").click();
         }

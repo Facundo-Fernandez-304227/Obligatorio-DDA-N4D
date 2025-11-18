@@ -17,6 +17,7 @@ import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoHabilitado;
 import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoPenalizado;
 import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoPropietario;
 import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoSuspendido;
+import com.OBLIGATORIO.OBLIGATORIO.Excepciones.UsuarioException;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
 import com.OBLIGATORIO.OBLIGATORIO.Servicio.Fachada;
 import com.OBLIGATORIO.OBLIGATORIO.Utils.Respuesta;
@@ -28,35 +29,17 @@ public class ControladorCambioEstado {
     @PostMapping("/actualizarEstado")
     public List<Respuesta> actualizarEstado(@RequestParam String cedula, @RequestParam String estadoNuevo) {
 
-        UsuarioPropietario propietario = Fachada.getInstancia().buscarPropietarioPorCedula(cedula);
+        try {
+            Fachada.getInstancia().actualizarEstadoPropietario(cedula, estadoNuevo);
 
-        if (propietario == null) {
-            return Respuesta.lista(new Respuesta("error", "No existe un propietario con esa cédula."));
+            return Respuesta.lista(
+                    new Respuesta("actualizarEstado", "Estado actualizado correctamente."));
+
+        } catch (UsuarioException e) {
+            return Respuesta.lista(new Respuesta("error", e.getMessage()));
+        } catch (Exception e) {
+            return Respuesta.lista(new Respuesta("error", "Ocurrió un error inesperado."));
         }
-
-        EstadoPropietario nuevoEstado;
-
-        switch (estadoNuevo) {
-            case "Habilitado":
-                nuevoEstado = new EstadoHabilitado();
-                break;
-            case "Deshabilitado":
-                nuevoEstado = new EstadoDeshabilitado();
-                break;
-            case "Suspendido":
-                nuevoEstado = new EstadoSuspendido();
-                break;
-            case "Penalizado":
-                nuevoEstado = new EstadoPenalizado();
-                break;
-            default:
-                return Respuesta.lista(new Respuesta("error", "Estado inválido."));
-        }
-
-        // Asignar correctamente el estado usando tu patrón State
-        propietario.setEstado(nuevoEstado);
-
-        return Respuesta.lista(new Respuesta("actualizarEstado", "Estado actualizado correctamente."));
     }
 
     @GetMapping("/buscarPropietarioEstado")
@@ -65,8 +48,7 @@ public class ControladorCambioEstado {
         UsuarioPropietario propietario = Fachada.getInstancia().buscarPropietarioPorCedula(cedula);
 
         if (propietario == null) {
-            return Respuesta.lista(
-                    new Respuesta("error", "No existe un propietario con esa cédula."));
+            return Respuesta.lista(new Respuesta("error", "No existe un propietario con esa cédula."));
         }
 
         Map<String, Object> datos = new HashMap<>();
@@ -88,13 +70,9 @@ public class ControladorCambioEstado {
             estadosDTO.add(new EstadoDTO(e));
         }
 
-        // Enviar respuesta
         Map<String, Object> datos = new HashMap<>();
         datos.put("estados", estadosDTO);
 
-        return Respuesta.lista(
-            new Respuesta("cambiarEstado", datos)
-        );
+        return Respuesta.lista(new Respuesta("cambiarEstado", datos));
     }
-
 }

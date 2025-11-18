@@ -12,7 +12,7 @@ import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Vehiculo;
 
 public class ServicioVehiculos {
-    
+
     private List<Vehiculo> vehiculos = new ArrayList<Vehiculo>();
 
     public void agregarVehiculo(Vehiculo vehiculo1) throws VehiculoException {
@@ -38,38 +38,19 @@ public class ServicioVehiculos {
         vehiculos.add(vehiculo1);
     }
 
-    public void agregarTransito(Transito transito1) throws VehiculoException {
-        if (transito1 == null) {
-            throw new VehiculoException("El tránsito no puede ser nulo.");
-        }
+    public void agregarTransito(Transito t) throws VehiculoException {
 
-        Vehiculo vehiculo = transito1.getVehiculo();
-        if (vehiculo == null || vehiculo.getMatriculaVehiculo() == null) {
-            throw new VehiculoException("El tránsito no tiene un vehículo asociado válido.");
-        }
+        Vehiculo v = buscarVehiculoPorMatricula(t.getVehiculo().getMatriculaVehiculo());
+        v.getTransitos().add(t);
 
-        Vehiculo vehiculoEncontrado = null;
-        for (Vehiculo v : vehiculos) {
-            if (v.getMatriculaVehiculo().equalsIgnoreCase(vehiculo.getMatriculaVehiculo())) {
-                vehiculoEncontrado = v;
-                break;
-            }
-        }
+        // pedir al tránsito su notificación
+        Notificacion noti = t.generarNotificacion();
 
-        if (vehiculoEncontrado == null) {
-            throw new VehiculoException("No se encontró el vehículo con matrícula: " + vehiculo.getMatriculaVehiculo());
-        }
+        UsuarioPropietario propietario = v.getUsuarioPropietario();
+        propietario.agregarNotificacion(noti);
 
-        // REVISAR ESTO NO SE SI VA ACA.
-
-        vehiculoEncontrado.getTransitos().add(transito1);
-        Notificacion notificacion = new Notificacion(
-                LocalDateTime.now(),
-                "Pasaste por el puesto: " + transito1.getPuesto().getNombrePuesto() + "con el vehiculo "
-                        + vehiculo.getMatriculaVehiculo());
-
-        // REVISAR SI DESPOUES CON SSEE SE HACE ASI
-        Fachada.getInstancia().avisar(notificacion);
+        //aviso SSE
+        Fachada.getInstancia().avisar("TRANSITO_REGISTRADO");
     }
 
     public Vehiculo buscarVehiculoPorMatricula(String matricula) throws VehiculoException {

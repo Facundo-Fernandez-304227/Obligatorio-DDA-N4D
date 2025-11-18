@@ -1,15 +1,18 @@
 package com.OBLIGATORIO.OBLIGATORIO.Modelo;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoHabilitado;
 import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoPropietario;
+import com.OBLIGATORIO.OBLIGATORIO.Excepciones.UsuarioException;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.VehiculoException;
 import com.OBLIGATORIO.OBLIGATORIO.Interfaces.Usuario;
 import com.OBLIGATORIO.OBLIGATORIO.Observador.Observable;
 import com.OBLIGATORIO.OBLIGATORIO.Observador.Observador;
+import com.OBLIGATORIO.OBLIGATORIO.Servicio.Fachada;
 
 import lombok.Getter;
 
@@ -57,25 +60,24 @@ public class UsuarioPropietario implements Usuario, Observador {
         vehiculo1.setUsuarioPropietario(this);
     }
 
-    public void setEstado(EstadoPropietario nuevoEstado) {
-        this.estado = nuevoEstado;
-        nuevoEstado.setPropietario(this);
-    }
+    public void asignarBonificacion(Bonificacion bon, Puesto puesto) throws UsuarioException {
 
-    public void asignarBonificacion(Bonificacion bonificacionFrecuente, Puesto puesto) {
-        BonificacionAsignada nuevaBonificacion = new BonificacionAsignada(this, bonificacionFrecuente, puesto,
-                LocalDate.now());
-        bonificacionAsignadas.add(nuevaBonificacion);
-    }
-
-    public void setSaldoActual(double saldoFinal) {
-        this.saldoActual = saldoFinal;
-    }
-        
-        public void limpiarNotificaciones() {
-         notificaciones.clear();
+        for (BonificacionAsignada b : bonificacionAsignadas) {
+            if (b.getBonificacion().getNombre().equalsIgnoreCase(bon.getNombre())) {
+                throw new UsuarioException("El propietario ya tiene esa bonificación.");
+            }
         }
 
+        BonificacionAsignada nuevaBonificacion = new BonificacionAsignada(this, bon, puesto, LocalDate.now());
+
+        bonificacionAsignadas.add(nuevaBonificacion);
+
+        Notificacion noti = new Notificacion(LocalDateTime.now(), "Se te asignó la bonificación \"" + bon.getNombre()
+                + "\" en el puesto \"" + puesto.getNombrePuesto() + "\".");
+        this.agregarNotificacion(noti);
+
+        Fachada.getInstancia().avisar("BONIFICACION_ASIGNADA");
+    }
 
     @Override
     public void actualizar(Observable observable, Object evento) {
@@ -84,6 +86,45 @@ public class UsuarioPropietario implements Usuario, Observador {
             for (Notificacion n : notificaciones) {
                 System.out.println(n.getFechaEnvio() + " - " + n.getMensaje());
             }
+        }
+    }
+
+    public void agregarNotificacion(Notificacion noti) {
+        notificaciones.add(noti);
+    }
+
+    public void setSaldoActual(double nuevoSaldo) {
+
+        this.saldoActual = nuevoSaldo;
+
+        if (this.saldoActual <= this.saldoMinimoAlerta) {
+
+            Notificacion noti = new Notificacion(LocalDateTime.now(),
+                    "Tu saldo ha llegado al mínimo permitido (" + saldoActual + ").");
+
+            this.agregarNotificacion(noti);
+
+            Fachada.getInstancia().avisar("SALDO_MINIMO");
+        }
+    }
+
+    public void cambiarEstado(EstadoPropietario nuevoEstado) {
+
+        this.estado = nuevoEstado;
+        nuevoEstado.setPropietario(this);
+
+        Notificacion noti = new Notificacion(LocalDateTime.now(),
+                "Tu estado ha cambiado a: " + nuevoEstado.getNombre());
+
+        this.agregarNotificacion(noti);
+
+        // avisar SSE que debe refrescar tablero
+        Fachada.getInstancia().avisar("ESTADO_CAMBIADO");
+    }
+
+    public void limpiarNotificaciones() {
+        if (notificaciones != null) {
+            notificaciones.clear();
         }
     }
 

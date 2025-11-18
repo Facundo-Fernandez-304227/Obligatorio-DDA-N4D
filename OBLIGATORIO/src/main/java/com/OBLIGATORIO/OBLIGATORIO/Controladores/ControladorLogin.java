@@ -36,13 +36,13 @@ public class ControladorLogin {
         if (usuario instanceof UsuarioPropietario propietario) {
 
             if (!propietario.getEstado().puedeIngresarSistema()) {
-                return Respuesta.lista(new Respuesta("error", "El propietario no tiene permiso para ingresar."));
+                return Respuesta.lista(new Respuesta("error", "Usuario deshabilitado, no puede ingresar al sistema."));
             }
 
             return Respuesta.lista(new Respuesta("loginExitoso", "menuPropietario.html"));
         }
 
-        return Respuesta.lista(new Respuesta("error", "Tipo de usuario no reconocido."));
+        return Respuesta.lista(new Respuesta("error", "Acceso denegado."));
     }
 
 }

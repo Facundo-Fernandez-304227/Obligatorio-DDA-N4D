@@ -60,37 +60,30 @@ public class ControladorEmularTransito {
     }
 
     @PostMapping("/emularTransito")
-    public List<Respuesta> emularTransito( @RequestParam String puesto, @RequestParam String matricula, @RequestParam String fechaHora) {
+    public List<Respuesta> emularTransito(@RequestParam String puesto, @RequestParam String matricula,
+            @RequestParam String fechaHora) {
 
         try {
-            // 1️⃣ Buscar el puesto por nombre
-            Puesto puestoSeleccionado = Fachada.getInstancia().buscarPuestoPorNombre(puesto);
-            if (puestoSeleccionado == null) {
+
+            Puesto puestoSel = Fachada.getInstancia().buscarPuestoPorNombre(puesto);
+            if (puestoSel == null) {
                 return Respuesta.lista(new Respuesta("error", "No se encontró el puesto seleccionado."));
             }
 
-            // 2️⃣ Buscar el vehículo por matrícula
             Vehiculo vehiculo = Fachada.getInstancia().buscarVehiculoPorMatricula(matricula);
             if (vehiculo == null) {
                 return Respuesta
                         .lista(new Respuesta("error", "No se encontró el vehículo con matrícula: " + matricula));
             }
 
-            // 2.1️⃣ Validar estado del propietario (State)
             UsuarioPropietario propietario = vehiculo.getUsuarioPropietario();
 
-            try {
-                if (!propietario.getEstado().puedeRealizarTransitos()) {
-                    return Respuesta.lista(new Respuesta("error",
-                            "El propietario está en estado '" + propietario.getEstado().getNombre()
-                                    + "' y no puede realizar transitos."));
-                }
-            } catch (UsuarioException e) {
-                return Respuesta.lista(new Respuesta("error", e.getMessage()));
+            if (!propietario.getEstado().puedeRealizarTransitos()) {
+                return Respuesta.lista(new Respuesta("error", "El propietario está en estado '"
+                        + propietario.getEstado().getNombre() + "' y no puede realizar tránsitos."));
             }
 
-            // 3️⃣ Obtener la tarifa correspondiente
-            TarifaPuesto tarifa = puestoSeleccionado.getListaTarifaPuesto().stream()
+            TarifaPuesto tarifa = puestoSel.getListaTarifaPuesto().stream()
                     .filter(t -> t.getCategoriaVehiculoPuesto().equals(vehiculo.getCategoriaVehiculo()))
                     .findFirst()
                     .orElse(null);
@@ -99,32 +92,48 @@ public class ControladorEmularTransito {
                 return Respuesta.lista(new Respuesta("error", "No hay tarifa para la categoría del vehículo."));
             }
 
-            // 4️⃣ Calcular fecha y hora
+            // Parsear fecha
             LocalDate fecha = LocalDate.parse(fechaHora.substring(0, 10));
             LocalTime hora = LocalTime.parse(fechaHora.substring(11));
 
-            // 5️⃣ Buscar si tiene bonificación asignada
-            Bonificacion bonificacionAplicada = vehiculo.getUsuarioPropietario().getBonificacionAsignadas().stream()
-                    .filter(b -> b.getPuesto().equals(puestoSeleccionado))
-                    .map(b -> b.getBonificacion())
-                    .findFirst()
-                    .orElse(null);
+            // 6) Buscar bonificación asignada para ese puesto
+            Bonificacion bonificacionAplicada = null;
 
-            // 6️⃣ Crear tránsito
-            Transito transito = new Transito(fecha, hora, tarifa.getMontoPuesto(), vehiculo, puestoSeleccionado, bonificacionAplicada);
+            // Si NO está penalizado → puede aplicar bonificaciones
+            if (!propietario.getEstado().getNombre().equals("Penalizado")) {
 
-            // 7️⃣ Agregarlo
+                bonificacionAplicada = propietario.getBonificacionAsignadas().stream()
+                        .filter(b -> b.getPuesto().equals(puestoSel))
+                        .map(b -> b.getBonificacion())
+                        .findFirst()
+                        .orElse(null);
+
+            } else {
+                // Está penalizado → ignorar bonificaciones
+                bonificacionAplicada = null;
+            }
+
+            //Crear tránsito
+            Transito transito = new Transito(fecha, hora, tarifa.getMontoPuesto(), vehiculo, puestoSel, bonificacionAplicada);
+
+            //VALIDAR SALDO
+            double costoFinal = transito.getMontoPagado();
+            double saldoActual = propietario.getSaldoActual();
+
+            if (saldoActual < costoFinal) {
+                return Respuesta.lista(new Respuesta("error", "Saldo insuficiente. Su saldo es $" + saldoActual + " y el costo del tránsito es $" + costoFinal));
+            }
+
+            //agregar tránsito
             Fachada.getInstancia().agregarTransito(transito);
 
-            // 8️⃣ Calcular valores
-            double costoFinal = transito.getMontoPagado();
-            double saldoFinal = vehiculo.getUsuarioPropietario().getSaldoActual() - costoFinal;
+            //Cobrar tránsito
+            double saldoFinal = saldoActual - costoFinal;
+            propietario.setSaldoActual(saldoFinal);
 
-            vehiculo.getUsuarioPropietario().setSaldoActual(saldoFinal);
-
-            // 9️⃣ Armar respuesta al front
+            // 11) Respuesta al front
             Map<String, Object> info = Map.of(
-                    "propietario", vehiculo.getUsuarioPropietario().getNombreCompleto(),
+                    "propietario", propietario.getNombreCompleto(),
                     "categoria", vehiculo.getCategoriaVehiculo().getNombreCategoria(),
                     "bonificacion",
                     bonificacionAplicada != null ? bonificacionAplicada.getNombre() : "Sin bonificación",
@@ -134,7 +143,6 @@ public class ControladorEmularTransito {
             return Respuesta.lista(new Respuesta("emularTransito", info));
 
         } catch (Exception e) {
-            // Captura cualquier excepción inesperada
             e.printStackTrace();
             return Respuesta.lista(new Respuesta("error", "Ocurrió un error: " + e.getMessage()));
         }

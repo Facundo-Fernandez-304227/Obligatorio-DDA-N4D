@@ -1,5 +1,7 @@
 package com.OBLIGATORIO.OBLIGATORIO.Controladores;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import com.OBLIGATORIO.OBLIGATORIO.Observador.Observable;
@@ -29,44 +31,48 @@ import jakarta.servlet.http.HttpSession;
 @RestController
 @RequestMapping("/propietario")
 @Scope("session")
-
 public class ControladorMenuPropietario implements Observador {
 
+    private final ConexionNavegador conexionNavegador;
 
-private final ConexionNavegador conexionNavegador; 
-    
     public ControladorMenuPropietario(@Autowired ConexionNavegador conexionNavegador) {
         this.conexionNavegador = conexionNavegador;
 
     }
 
     @Override
-public void actualizar(Observable observable, Object evento) {
+    public void actualizar(Observable observable, Object evento) {
 
-    if (evento instanceof Notificacion noti) {
-     
-        NotificacionDTO dto = new NotificacionDTO(noti);
+        if (evento instanceof String ev) {
 
-        // LO CASTEO A DTO PARA QUE NO ROMPA PORQUE NOTIFICACION
-        //TIENE LOCALDATETIME Y NOTI DTO NO, SINO JSON SERIALIZER ROMPE
-        conexionNavegador.enviarJSON(dto);
-    } 
+            if (ev.equals("ESTADO_CAMBIADO") || ev.equals("BONIFICACION_ASIGNADA") || ev.equals("SALDO_MINIMO")
+                    || ev.equals("TRANSITO_REGISTRADO")) {
+
+                // Crear "notificación" para refrescar tablero
+                NotificacionDTO refresco = new NotificacionDTO();
+                refresco.setMensaje("REFRESCAR_TABLERO");
+                refresco.setFechaEnvio(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+                conexionNavegador.enviarJSON(refresco);
+                return;
+            }
+        }
+
+        if (evento instanceof Notificacion noti) {
+            NotificacionDTO dto = new NotificacionDTO(noti);
+            conexionNavegador.enviarJSON(dto);
+        }
     }
-     
-
 
     @GetMapping(value = "/registrarSSE", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter registrarSSE() {
 
         conexionNavegador.conectarSSE();
-        return conexionNavegador.getConexionSSE(); 
-       
-    }
+        return conexionNavegador.getConexionSSE();
 
+    }
 
     @GetMapping("/tablero")
     public List<Respuesta> cargarTablero(HttpSession sesion) {
-
 
         Object usuario = sesion.getAttribute("usuarioLogueado");
 
@@ -79,21 +85,16 @@ public void actualizar(Observable observable, Object evento) {
             return Respuesta.lista(new Respuesta("usuarioNoAutenticado", "login.html"));
         }
 
-   System.out.println(">>> Notificaciones en propietario: "
-                       + propietario.getNotificaciones().size());
+        // System.out.println(">>> Notificaciones en propietario: " +
+        // propietario.getNotificaciones().size());
 
-
-
-         Fachada.getInstancia().agregarObservador(this);
+        Fachada.getInstancia().agregarObservador(this);
         Fachada.getInstancia().agregarObservador(propietario);
 
-        //FALTA DESSUSCRIBIR CUANDO SE CIERRA SESION
+        // FALTA DESSUSCRIBIR CUANDO SE CIERRA SESION
 
-
-        // Creamos el DTO con los datos del propietario
         PropietarioDTO dto = new PropietarioDTO(propietario);
 
-        // El "id" debe coincidir con la función en tu HTML → mostrar_tablero()
         return Respuesta.lista(new Respuesta("tablero", dto));
 
     }
@@ -113,20 +114,16 @@ public void actualizar(Observable observable, Object evento) {
         return notiDTOs;
     }
 
+    @PostMapping("/borrarNotificaciones")
+    public List<Respuesta> borrarNotificaciones( @SessionAttribute("usuarioLogueado") UsuarioPropietario propietario) {
 
-@PostMapping("/borrarNotificaciones")
-    public List<Respuesta> borrarNotificaciones(
-            @SessionAttribute("usuarioLogueado") UsuarioPropietario propietario) {
+        if (propietario.getNotificaciones().isEmpty()) {
+            return Respuesta.lista(new Respuesta("notificacionesBorradas", "No hay notificaciones para borrar."));
+        }
 
-        propietario.limpiarNotificaciones();  // borra en el modelo
+        propietario.limpiarNotificaciones();
 
-
-        return Respuesta.lista(
-            new Respuesta("notificacionesBorradas", "Se borraron las notificaciones correctamente.")
-        );
+        return Respuesta.lista(new Respuesta("notificacionesBorradas", "Se borraron las notificaciones correctamente."));
     }
+
 }
-
-
-
-

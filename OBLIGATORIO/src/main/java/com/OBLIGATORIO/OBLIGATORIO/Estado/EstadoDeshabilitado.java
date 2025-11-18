@@ -6,7 +6,7 @@ public class EstadoDeshabilitado extends EstadoPropietario {
 
     @Override
     public boolean puedeIngresarSistema() throws UsuarioException {
-        throw new UsuarioException("Este usuario se encuentra deshabilitado.");
+        throw new UsuarioException("Usuario deshabilitado, no puede ingresar al sistema.");
     }
 
     @Override

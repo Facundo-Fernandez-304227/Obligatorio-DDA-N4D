@@ -66,6 +66,7 @@ public class Fachada extends Observable {
     public void asignarBonificacion(String cedulaPropietario, Bonificacion bonificacion, Puesto puesto)
             throws UsuarioException {
         servicioUsuario.asignarBonificacion(cedulaPropietario, bonificacion, puesto);
+
     }
 
     public void agregarPuesto(Puesto puesto) {
@@ -110,6 +111,10 @@ public class Fachada extends Observable {
 
     public List<EstadoPropietario> getEstados() {
         return servicioEstado.getEstados();
+    }
+
+    public void actualizarEstadoPropietario(String cedula, String estadoNuevo) throws UsuarioException {
+        servicioUsuario.actualizarEstadoPropietario(cedula, estadoNuevo);
     }
 
 }

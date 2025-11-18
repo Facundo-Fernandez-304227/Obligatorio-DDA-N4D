@@ -1,11 +1,18 @@
 package com.OBLIGATORIO.OBLIGATORIO.Servicio;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoDeshabilitado;
+import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoHabilitado;
+import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoPenalizado;
+import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoPropietario;
+import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoSuspendido;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.UsuarioException;
 import com.OBLIGATORIO.OBLIGATORIO.Interfaces.Usuario;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Bonificacion;
+import com.OBLIGATORIO.OBLIGATORIO.Modelo.Notificacion;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Puesto;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioAdministrador;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
@@ -40,8 +47,9 @@ public class ServicioUsuario {
         return null;
     }
 
-    public void asignarBonificacion(String cedulaPropietario, Bonificacion bonificacion, Puesto puesto) throws UsuarioException {
-        
+    public void asignarBonificacion(String cedulaPropietario, Bonificacion bonificacion, Puesto puesto)
+            throws UsuarioException {
+
         if (cedulaPropietario == null || bonificacion == null || puesto == null) {
             throw new UsuarioException("Datos inválidos para asignar la bonificación.");
 
@@ -59,11 +67,34 @@ public class ServicioUsuario {
         if (propietario == null) {
             throw new UsuarioException("No se encontró el propietario con cédula " + cedulaPropietario);
         }
-        
+
         propietario.asignarBonificacion(bonificacion, puesto);
 
-        //VERIFICAR QUE NO TENGA ESA BONIFICACION YA
-        
+    }
+
+    public void actualizarEstadoPropietario(String cedula, String estadoNuevo) throws UsuarioException {
+
+        UsuarioPropietario propietario = buscarPropietarioPorCedula(cedula);
+
+        if (propietario == null) {
+            throw new UsuarioException("No existe un propietario con esa cédula.");
+        }
+
+        EstadoPropietario nuevoEstado;
+
+        if (estadoNuevo.equals("Habilitado")) {
+            nuevoEstado = new EstadoHabilitado();
+        } else if (estadoNuevo.equals("Deshabilitado")) {
+            nuevoEstado = new EstadoDeshabilitado();
+        } else if (estadoNuevo.equals("Suspendido")) {
+            nuevoEstado = new EstadoSuspendido();
+        } else if (estadoNuevo.equals("Penalizado")) {
+            nuevoEstado = new EstadoPenalizado();
+        } else {
+            throw new UsuarioException("Estado inválido.");
+        }
+
+        propietario.cambiarEstado(nuevoEstado);
     }
 
 }
