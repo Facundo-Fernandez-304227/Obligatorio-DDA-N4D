@@ -31,21 +31,16 @@ public class ControladorAsignarBonificacion {
 
         List<Puesto> puestos = Fachada.getInstancia().getPuestos();
 
-        List<BonificacionDTO> listaBonificacionesDTO = bonificaciones.stream()
-                .map(BonificacionDTO::new)
-                .toList();
+        List<BonificacionDTO> listaBonificacionesDTO = bonificaciones.stream().map(BonificacionDTO::new).toList();
 
-        // 3) Convertir puestos a DTO
-        List<PuestoDTO> listaPuestosDTO = puestos.stream()
-                .map(PuestoDTO::new)
-                .toList();
+        List<PuestoDTO> listaPuestosDTO = puestos.stream().map(PuestoDTO::new).toList();
 
-        // 4) Agrupar datos para enviar al frontend
+        //Agrupar datos para enviar
         Map<String, Object> datos = new HashMap<>();
         datos.put("bonificaciones", listaBonificacionesDTO);
         datos.put("puestos", listaPuestosDTO);
 
-        // 5) Respuesta al frontend
+
         return Respuesta.lista(new Respuesta("asignarBonificaciones", datos));
 
     }

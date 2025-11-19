@@ -97,4 +97,15 @@ public class ServicioUsuario {
         propietario.cambiarEstado(nuevoEstado);
     }
 
+    public void borrarNotificacionesUsuario(UsuarioPropietario propietario) {
+        if (propietario == null)
+            return;
+
+        if (!usuarios.contains(propietario)) {
+            return;
+        }
+
+        propietario.limpiarNotificaciones();
+    }
+
 }

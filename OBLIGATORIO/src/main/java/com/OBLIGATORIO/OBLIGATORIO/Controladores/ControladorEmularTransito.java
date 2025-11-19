@@ -32,31 +32,27 @@ public class ControladorEmularTransito {
     @GetMapping("/iniciarVista")
     public List<Respuesta> iniciarVista() {
 
-        List<PuestoDTO> listaDTO = Fachada.getInstancia()
-                .getPuestos()
-                .stream()
-                .map(PuestoDTO::new)
-                .collect(Collectors.toList());
+        List<PuestoDTO> listaDTO = new ArrayList<>();
+
+        for (Puesto p : Fachada.getInstancia().getPuestos()) {
+            listaDTO.add(new PuestoDTO(p));
+        }
 
         return Respuesta.lista(new Respuesta("iniciarVista", listaDTO));
     }
 
     @GetMapping("/tarifas")
     public List<Respuesta> getTarifas(@RequestParam String nombrePuesto) {
-        Puesto puesto = Fachada.getInstancia().buscarPuestoPorNombre(nombrePuesto);
-        if (puesto == null) {
-            return Respuesta.lista(new Respuesta("tarifas",
-                    Map.of("tarifas", new ArrayList<>())));
+
+        List<TarifaPuesto> tarifas = Fachada.getInstancia().getTarifas(nombrePuesto);
+
+        List<TarifaPuestoDTO> listaDTO = new ArrayList<>();
+        
+        for (TarifaPuesto t : tarifas) {
+            listaDTO.add(new TarifaPuestoDTO(t));
         }
 
-        // 🔹 Convertir tarifas a DTOs para evitar bucles
-        List<TarifaPuestoDTO> tarifasDTO = puesto.getListaTarifaPuesto()
-                .stream()
-                .map(TarifaPuestoDTO::new)
-                .collect(Collectors.toList());
-
-        return Respuesta.lista(new Respuesta("tarifas",
-                Map.of("tarifas", tarifasDTO)));
+        return Respuesta.lista(new Respuesta("tarifas", listaDTO));
     }
 
     @PostMapping("/emularTransito")
@@ -113,21 +109,23 @@ public class ControladorEmularTransito {
                 bonificacionAplicada = null;
             }
 
-            //Crear tránsito
-            Transito transito = new Transito(fecha, hora, tarifa.getMontoPuesto(), vehiculo, puestoSel, bonificacionAplicada);
+            // Crear tránsito
+            Transito transito = new Transito(fecha, hora, tarifa.getMontoPuesto(), vehiculo, puestoSel,
+                    bonificacionAplicada);
 
-            //VALIDAR SALDO
+            // VALIDAR SALDO
             double costoFinal = transito.getMontoPagado();
             double saldoActual = propietario.getSaldoActual();
 
             if (saldoActual < costoFinal) {
-                return Respuesta.lista(new Respuesta("error", "Saldo insuficiente. Su saldo es $" + saldoActual + " y el costo del tránsito es $" + costoFinal));
+                return Respuesta.lista(new Respuesta("error", "Saldo insuficiente. Su saldo es $" + saldoActual
+                        + " y el costo del tránsito es $" + costoFinal));
             }
 
-            //agregar tránsito
+            // agregar tránsito
             Fachada.getInstancia().agregarTransito(transito);
 
-            //Cobrar tránsito
+            // Cobrar tránsito
             double saldoFinal = saldoActual - costoFinal;
             propietario.setSaldoActual(saldoFinal);
 

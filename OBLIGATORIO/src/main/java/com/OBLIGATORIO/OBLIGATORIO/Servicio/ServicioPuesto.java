@@ -40,4 +40,14 @@ public class ServicioPuesto {
         Puesto puesto = tarifaPuesto.getPuesto();
         puesto.agregarTarifaPuesto(tarifaPuesto);
     }
+
+    public List<TarifaPuesto> getTarifas(String nombrePuesto) {
+        for (Puesto puesto : puestos) {
+            if(puesto.getNombrePuesto().equals(nombrePuesto)){
+                puesto.getListaTarifaPuesto();
+            }
+            
+        }
+        return null;
+    }
 }

@@ -2,6 +2,7 @@ package com.OBLIGATORIO.OBLIGATORIO.Servicio;
 
 import java.util.List;
 
+import com.OBLIGATORIO.OBLIGATORIO.Dtos.TarifaPuestoDTO;
 import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoPropietario;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.BonificacionException;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.EstadoException;
@@ -63,8 +64,7 @@ public class Fachada extends Observable {
         servicioVehiculos.agregarTransito(transito1);
     }
 
-    public void asignarBonificacion(String cedulaPropietario, Bonificacion bonificacion, Puesto puesto)
-            throws UsuarioException {
+    public void asignarBonificacion(String cedulaPropietario, Bonificacion bonificacion, Puesto puesto) throws UsuarioException {
         servicioUsuario.asignarBonificacion(cedulaPropietario, bonificacion, puesto);
 
     }
@@ -115,6 +115,14 @@ public class Fachada extends Observable {
 
     public void actualizarEstadoPropietario(String cedula, String estadoNuevo) throws UsuarioException {
         servicioUsuario.actualizarEstadoPropietario(cedula, estadoNuevo);
+    }
+
+    public void borrarNotificacionesUsuario(UsuarioPropietario propietario) {
+        servicioUsuario.borrarNotificacionesUsuario(propietario);
+    }
+
+    public List<TarifaPuesto> getTarifas(String nombrePuesto) {
+        return servicioPuesto.getTarifas(nombrePuesto);
     }
 
 }

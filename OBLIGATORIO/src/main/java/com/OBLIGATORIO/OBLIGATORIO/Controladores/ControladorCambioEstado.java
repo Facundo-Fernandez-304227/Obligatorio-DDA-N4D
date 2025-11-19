@@ -32,8 +32,7 @@ public class ControladorCambioEstado {
         try {
             Fachada.getInstancia().actualizarEstadoPropietario(cedula, estadoNuevo);
 
-            return Respuesta.lista(
-                    new Respuesta("actualizarEstado", "Estado actualizado correctamente."));
+            return Respuesta.lista(new Respuesta("actualizarEstado", "Estado actualizado correctamente."));
 
         } catch (UsuarioException e) {
             return Respuesta.lista(new Respuesta("error", e.getMessage()));
@@ -51,6 +50,7 @@ public class ControladorCambioEstado {
             return Respuesta.lista(new Respuesta("error", "No existe un propietario con esa cédula."));
         }
 
+        //Agrupar datos para enviar
         Map<String, Object> datos = new HashMap<>();
         datos.put("nombre", propietario.getNombreCompleto());
         datos.put("estado", propietario.getEstado().getNombre());
@@ -61,15 +61,14 @@ public class ControladorCambioEstado {
     @GetMapping("/cambiarEstado")
     public List<Respuesta> iniciarVista() {
 
-        // Obtener los estados desde fachada
         List<EstadoPropietario> lista = Fachada.getInstancia().getEstados();
 
-        // Convertirlos a DTO
         List<EstadoDTO> estadosDTO = new ArrayList<>();
         for (EstadoPropietario e : lista) {
             estadosDTO.add(new EstadoDTO(e));
         }
 
+        //Agrupar datos para enviar
         Map<String, Object> datos = new HashMap<>();
         datos.put("estados", estadosDTO);
 

@@ -45,8 +45,7 @@ public class ControladorMenuPropietario implements Observador {
 
         if (evento instanceof String ev) {
 
-            if (ev.equals("ESTADO_CAMBIADO") || ev.equals("BONIFICACION_ASIGNADA") || ev.equals("SALDO_MINIMO")
-                    || ev.equals("TRANSITO_REGISTRADO")) {
+            if (ev.equals("ESTADO_CAMBIADO") || ev.equals("BONIFICACION_ASIGNADA") || ev.equals("SALDO_MINIMO") || ev.equals("TRANSITO_REGISTRADO")) {
 
                 // Crear "notificación" para refrescar tablero
                 NotificacionDTO refresco = new NotificacionDTO();
@@ -85,9 +84,6 @@ public class ControladorMenuPropietario implements Observador {
             return Respuesta.lista(new Respuesta("usuarioNoAutenticado", "login.html"));
         }
 
-        // System.out.println(">>> Notificaciones en propietario: " +
-        // propietario.getNotificaciones().size());
-
         Fachada.getInstancia().agregarObservador(this);
         Fachada.getInstancia().agregarObservador(propietario);
 
@@ -115,13 +111,14 @@ public class ControladorMenuPropietario implements Observador {
     }
 
     @PostMapping("/borrarNotificaciones")
-    public List<Respuesta> borrarNotificaciones( @SessionAttribute("usuarioLogueado") UsuarioPropietario propietario) {
+    public List<Respuesta> borrarNotificaciones(
+            @SessionAttribute("usuarioLogueado") UsuarioPropietario propietario) {
 
         if (propietario.getNotificaciones().isEmpty()) {
             return Respuesta.lista(new Respuesta("notificacionesBorradas", "No hay notificaciones para borrar."));
         }
 
-        propietario.limpiarNotificaciones();
+        Fachada.getInstancia().borrarNotificacionesUsuario(propietario);
 
         return Respuesta.lista(new Respuesta("notificacionesBorradas", "Se borraron las notificaciones correctamente."));
     }

@@ -62,9 +62,14 @@ public class UsuarioPropietario implements Usuario, Observador {
 
     public void asignarBonificacion(Bonificacion bon, Puesto puesto) throws UsuarioException {
 
+        if (bon == null || puesto == null) {
+            throw new UsuarioException("Datos inválidos para asignar la bonificación.");
+        }
+
         for (BonificacionAsignada b : bonificacionAsignadas) {
-            if (b.getBonificacion().getNombre().equalsIgnoreCase(bon.getNombre())) {
-                throw new UsuarioException("El propietario ya tiene esa bonificación.");
+            if (b.getPuesto().getNombrePuesto().equalsIgnoreCase(puesto.getNombrePuesto())) {
+
+                throw new UsuarioException("El propietario ya tiene una bonificación asignada para el puesto: " + puesto.getNombrePuesto());
             }
         }
 
@@ -72,8 +77,7 @@ public class UsuarioPropietario implements Usuario, Observador {
 
         bonificacionAsignadas.add(nuevaBonificacion);
 
-        Notificacion noti = new Notificacion(LocalDateTime.now(), "Se te asignó la bonificación \"" + bon.getNombre()
-                + "\" en el puesto \"" + puesto.getNombrePuesto() + "\".");
+        Notificacion noti = new Notificacion(LocalDateTime.now(), "Se te asignó la bonificación \"" + bon.getNombre()+ "\" en el puesto \"" + puesto.getNombrePuesto() + "\".");
         this.agregarNotificacion(noti);
 
         Fachada.getInstancia().avisar("BONIFICACION_ASIGNADA");
@@ -81,6 +85,7 @@ public class UsuarioPropietario implements Usuario, Observador {
 
     @Override
     public void actualizar(Observable observable, Object evento) {
+
         if (evento instanceof Notificacion noti) {
             notificaciones.add(noti);
             for (Notificacion n : notificaciones) {
@@ -90,7 +95,13 @@ public class UsuarioPropietario implements Usuario, Observador {
     }
 
     public void agregarNotificacion(Notificacion noti) {
-        notificaciones.add(noti);
+        try {
+            if (estado.puedeRecibirNotificaciones()) {
+                notificaciones.add(noti);
+            }
+        } catch (UsuarioException ex) {
+            // Está penalizado → NO agregar la notificación
+        }
     }
 
     public void setSaldoActual(double nuevoSaldo) {
