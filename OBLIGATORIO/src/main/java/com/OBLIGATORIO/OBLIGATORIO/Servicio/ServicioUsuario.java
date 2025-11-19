@@ -98,14 +98,16 @@ public class ServicioUsuario {
     }
 
     public void borrarNotificacionesUsuario(UsuarioPropietario propietario) {
+
         if (propietario == null)
             return;
 
-        if (!usuarios.contains(propietario)) {
+        if (!usuarios.contains(propietario))
             return;
-        }
 
         propietario.limpiarNotificaciones();
+
+        Fachada.getInstancia().avisar("NOTIFICACIONES_BORRADAS");
     }
 
 }

@@ -33,7 +33,7 @@ import com.OBLIGATORIO.OBLIGATORIO.Servicio.Fachada;
 public class ObligatorioApplication {
 
 	public static void main(String[] args)
-		throws VehiculoException, UsuarioException, PuestoException, BonificacionException, EstadoException {
+			throws VehiculoException, UsuarioException, PuestoException, BonificacionException, EstadoException {
 		SpringApplication.run(ObligatorioApplication.class, args);
 		precargaDeDatos();
 	}
@@ -44,7 +44,8 @@ public class ObligatorioApplication {
 		UsuarioAdministrador admin1 = new UsuarioAdministrador("12345678", "admin.123", "Usuario Administrador");
 		Fachada.getInstancia().agregarAdministrador(admin1);
 
-		UsuarioPropietario propietario1 = new UsuarioPropietario("23456789", "prop.123", "Usuario Propietario", 2000, 500);
+		UsuarioPropietario propietario1 = new UsuarioPropietario("23456789", "prop.123", "Usuario Propietario", 2000,
+				500);
 
 		Fachada.getInstancia().agregarPropietario(propietario1);
 

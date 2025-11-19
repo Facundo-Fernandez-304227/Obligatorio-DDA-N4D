@@ -29,5 +29,9 @@ public class Puesto {
     }
     */
 
+    public List<TarifaPuesto> getListaTarifaPuesto(){
+        return listaTarifaPuesto;
+    }
+
     
 }

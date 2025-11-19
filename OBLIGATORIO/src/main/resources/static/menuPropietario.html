@@ -20,7 +20,8 @@
     <!-- Título y salir -->
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <h2>Tablero de control del propietario</h2>
-      <a href="index.html" style="color: #b91c1c; font-weight: bold; text-decoration: none;">Salir</a>
+      <button onclick="cerrarSesion()"
+        style="color: #b91c1c; font-weight: bold; background:none; border:none; cursor:pointer;">Salir</button>
     </div>
 
     <!-- Resumen -->
@@ -87,6 +88,25 @@
         return;
       }
 
+      if (mensaje.mensaje === "REFRESCAR_NOTIFICACIONES") {
+
+        // PEDIR LAS NOTIFICACIONES AL BACKEND OTRA VEZ
+        fetch("/propietario/notificaciones")
+          .then(res => res.json())
+          .then(lista => {
+            if (lista.length === 0) {
+              document.getElementById("tablaNotificaciones").innerHTML =
+                "<p>No hay notificaciones para mostrar.</p>";
+            } else {
+              document.getElementById("tablaNotificaciones").innerHTML =
+                crearTablaDesdeJson(lista);
+            }
+          })
+          .catch(err => console.error("Error recargando notificaciones:", err));
+
+        return;
+      }
+
       //Sino, es una notificación normal
       agregarNotificacionATabla(mensaje);
     }
@@ -127,6 +147,13 @@
     }
 
 
+    function cerrarSesion() {
+      submit("/propietario/logout", "");
+    }
+
+    function mostrar_logoutExitoso(urlDestino) {
+      window.location.href = urlDestino;
+    }
 
 
 

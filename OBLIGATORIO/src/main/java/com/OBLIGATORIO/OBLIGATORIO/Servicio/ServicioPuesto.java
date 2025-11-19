@@ -8,7 +8,7 @@ import com.OBLIGATORIO.OBLIGATORIO.Modelo.Puesto;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.TarifaPuesto;
 
 public class ServicioPuesto {
-    
+
     private List<Puesto> puestos = new ArrayList<>();
 
     public void agregarPuesto(Puesto puesto) {
@@ -42,12 +42,21 @@ public class ServicioPuesto {
     }
 
     public List<TarifaPuesto> getTarifas(String nombrePuesto) {
+
         for (Puesto puesto : puestos) {
-            if(puesto.getNombrePuesto().equals(nombrePuesto)){
-                puesto.getListaTarifaPuesto();
+            if (puesto.getNombrePuesto().equals(nombrePuesto)) {
+
+                // ⚠ si la lista es null → devolver lista vacía
+                if (puesto.getListaTarifaPuesto() == null) {
+                    return new ArrayList<>();
+                }
+
+                return puesto.getListaTarifaPuesto();
             }
-            
         }
-        return null;
+
+        // ⚠ si no encontró el puesto → devolver lista vacía, no null
+        return new ArrayList<>();
     }
+
 }

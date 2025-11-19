@@ -45,7 +45,7 @@ public class ConexionNavegador  {
     public void enviarJSON(Object informacion) {
         try {
             String json = new ObjectMapper().writeValueAsString(informacion);
-             System.out.println("JSON generado en conexion navegador: " + json);
+            System.out.println("JSON generado en conexion navegador: " + json);
             enviarMensaje(json);
    
         } catch (JsonProcessingException e) {

@@ -34,6 +34,7 @@ import jakarta.servlet.http.HttpSession;
 public class ControladorMenuPropietario implements Observador {
 
     private final ConexionNavegador conexionNavegador;
+    private UsuarioPropietario propietarioActual;
 
     public ControladorMenuPropietario(@Autowired ConexionNavegador conexionNavegador) {
         this.conexionNavegador = conexionNavegador;
@@ -45,13 +46,24 @@ public class ControladorMenuPropietario implements Observador {
 
         if (evento instanceof String ev) {
 
-            if (ev.equals("ESTADO_CAMBIADO") || ev.equals("BONIFICACION_ASIGNADA") || ev.equals("SALDO_MINIMO") || ev.equals("TRANSITO_REGISTRADO")) {
+            if (ev.equals("ESTADO_CAMBIADO") || ev.equals("BONIFICACION_ASIGNADA") || ev.equals("SALDO_MINIMO")
+                    || ev.equals("TRANSITO_REGISTRADO")) {
 
-                // Crear "notificación" para refrescar tablero
-                NotificacionDTO refresco = new NotificacionDTO();
-                refresco.setMensaje("REFRESCAR_TABLERO");
-                refresco.setFechaEnvio(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-                conexionNavegador.enviarJSON(refresco);
+                NotificacionDTO dto = new NotificacionDTO();
+                dto.setMensaje("REFRESCAR_TABLERO");
+                dto.setFechaEnvio(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+
+                conexionNavegador.enviarJSON(dto);
+                return;
+            }
+
+            if (ev.equals("NOTIFICACIONES_BORRADAS")) {
+
+                NotificacionDTO dto = new NotificacionDTO();
+                dto.setMensaje("REFRESCAR_NOTIFICACIONES");
+                dto.setFechaEnvio(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+
+                conexionNavegador.enviarJSON(dto);
                 return;
             }
         }
@@ -76,7 +88,6 @@ public class ControladorMenuPropietario implements Observador {
         Object usuario = sesion.getAttribute("usuarioLogueado");
 
         if (usuario == null) {
-            // Redirige al login
             return Respuesta.lista(new Respuesta("usuarioNoAutenticado", "login.html"));
         }
 
@@ -100,6 +111,7 @@ public class ControladorMenuPropietario implements Observador {
             @SessionAttribute("usuarioLogueado") UsuarioPropietario propietario) {
 
         List<NotificacionDTO> notiDTOs = new ArrayList<>();
+
         for (Notificacion n : propietario.getNotificaciones()) {
             NotificacionDTO dto = new NotificacionDTO();
             dto.setFechaEnvio(n.getFechaEnvioStr());
@@ -111,8 +123,7 @@ public class ControladorMenuPropietario implements Observador {
     }
 
     @PostMapping("/borrarNotificaciones")
-    public List<Respuesta> borrarNotificaciones(
-            @SessionAttribute("usuarioLogueado") UsuarioPropietario propietario) {
+    public List<Respuesta> borrarNotificaciones(@SessionAttribute("usuarioLogueado") UsuarioPropietario propietario) {
 
         if (propietario.getNotificaciones().isEmpty()) {
             return Respuesta.lista(new Respuesta("notificacionesBorradas", "No hay notificaciones para borrar."));
@@ -120,7 +131,23 @@ public class ControladorMenuPropietario implements Observador {
 
         Fachada.getInstancia().borrarNotificacionesUsuario(propietario);
 
-        return Respuesta.lista(new Respuesta("notificacionesBorradas", "Se borraron las notificaciones correctamente."));
+        return Respuesta
+                .lista(new Respuesta("notificacionesBorradas", "Se borraron las notificaciones correctamente."));
+    }
+
+    @PostMapping("/logout")
+    public List<Respuesta> logout(HttpSession sesion) {
+
+        if (propietarioActual != null) {
+            Fachada.getInstancia().quitarObservador(this);
+            Fachada.getInstancia().quitarObservador(propietarioActual);
+        }
+
+        conexionNavegador.cerrarConexion();
+
+        sesion.invalidate();
+
+        return Respuesta.lista(new Respuesta("logoutExitoso", "index.html"));
     }
 
 }

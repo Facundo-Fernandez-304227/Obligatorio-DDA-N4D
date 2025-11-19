@@ -13,7 +13,6 @@ import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioAdministrador;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
 import com.OBLIGATORIO.OBLIGATORIO.Servicio.Fachada;
 import com.OBLIGATORIO.OBLIGATORIO.Utils.Respuesta;
-
 import jakarta.servlet.http.HttpSession;
 
 @RestController
@@ -21,28 +20,38 @@ import jakarta.servlet.http.HttpSession;
 public class ControladorLogin {
 
     @PostMapping("/login")
-    public List<Respuesta> login(HttpSession sesionHttp,
+    public List<Respuesta> login(
+            HttpSession sesionHttp,
             @RequestParam String cedula,
-            @RequestParam String contrasenia) throws UsuarioException {
+            @RequestParam String contrasenia) {
 
-        Usuario usuario = Fachada.getInstancia().login(cedula, contrasenia);
+        try {
+            
+            Usuario usuario = Fachada.getInstancia().login(cedula, contrasenia);
 
-        sesionHttp.setAttribute("usuarioLogueado", usuario);
+            sesionHttp.setAttribute("usuarioLogueado", usuario);
 
-        if (usuario instanceof UsuarioAdministrador) {
-            return Respuesta.lista(new Respuesta("loginExitoso", "emularTransito.html"));
-        }
-
-        if (usuario instanceof UsuarioPropietario propietario) {
-
-            if (!propietario.getEstado().puedeIngresarSistema()) {
-                return Respuesta.lista(new Respuesta("error", "Usuario deshabilitado, no puede ingresar al sistema."));
+            if (usuario instanceof UsuarioAdministrador) {
+                return Respuesta.lista(new Respuesta("loginExitoso", "emularTransito.html"));
             }
 
-            return Respuesta.lista(new Respuesta("loginExitoso", "menuPropietario.html"));
-        }
+            if (usuario instanceof UsuarioPropietario propietario) {
 
-        return Respuesta.lista(new Respuesta("error", "Acceso denegado."));
+                if (!propietario.getEstado().puedeIngresarSistema()) {
+                    return Respuesta.lista(new Respuesta("error","Usuario deshabilitado, no puede ingresar al sistema."));
+                }
+
+                return Respuesta.lista(new Respuesta("loginExitoso", "menuPropietario.html"));
+            }
+
+            return Respuesta.lista(new Respuesta("error", "Acceso denegado."));
+
+        } catch (UsuarioException e) {
+            return Respuesta.lista(new Respuesta("error", e.getMessage()));
+        }
     }
 
 }
+
+
+
