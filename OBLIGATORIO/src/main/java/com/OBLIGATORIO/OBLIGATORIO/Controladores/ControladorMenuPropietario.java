@@ -24,6 +24,7 @@ import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Vehiculo;
 import com.OBLIGATORIO.OBLIGATORIO.Observador.Observador;
 import com.OBLIGATORIO.OBLIGATORIO.Servicio.Fachada;
+import com.OBLIGATORIO.OBLIGATORIO.Servicio.Fachada.EventoSistema;
 import com.OBLIGATORIO.OBLIGATORIO.Utils.Respuesta;
 
 import jakarta.servlet.http.HttpSession;
@@ -46,21 +47,21 @@ public class ControladorMenuPropietario implements Observador {
 
         if (evento instanceof String ev) {
 
-            if (ev.equals("ESTADO_CAMBIADO") || ev.equals("BONIFICACION_ASIGNADA") || ev.equals("SALDO_MINIMO")
-                    || ev.equals("TRANSITO_REGISTRADO")) {
+            if (ev.equals(EventoSistema.ESTADO_CAMBIADO) || ev.equals(EventoSistema.BONIFICACION_ASIGNADA) || ev.equals(EventoSistema.SALDO_MINIMO)
+                    || ev.equals(EventoSistema.TRANSITO_REGISTRADO)) {
 
                 NotificacionDTO dto = new NotificacionDTO();
-                dto.setMensaje("REFRESCAR_TABLERO");
+                dto.setMensaje(EventoSistema.REFRESCAR_TABLERO.toString());
                 dto.setFechaEnvio(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
 
                 conexionNavegador.enviarJSON(dto);
                 return;
             }
 
-            if (ev.equals("NOTIFICACIONES_BORRADAS")) {
+            if (ev.equals(EventoSistema.NOTIFICACIONES_BORRADAS)) {
 
                 NotificacionDTO dto = new NotificacionDTO();
-                dto.setMensaje("REFRESCAR_NOTIFICACIONES");
+                dto.setMensaje(EventoSistema.REFRESCAR_NOTIFICACIONES.toString());
                 dto.setFechaEnvio(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
 
                 conexionNavegador.enviarJSON(dto);
@@ -135,6 +136,9 @@ public class ControladorMenuPropietario implements Observador {
                 .lista(new Respuesta("notificacionesBorradas", "Se borraron las notificaciones correctamente."));
     }
 
+
+
+    //LOGOUT DEBE IR EN CONTROLADOR LOGIN.
     @PostMapping("/logout")
     public List<Respuesta> logout(HttpSession sesion) {
 

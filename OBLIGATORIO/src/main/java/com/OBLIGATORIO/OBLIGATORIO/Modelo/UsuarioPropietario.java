@@ -13,6 +13,7 @@ import com.OBLIGATORIO.OBLIGATORIO.Interfaces.Usuario;
 import com.OBLIGATORIO.OBLIGATORIO.Observador.Observable;
 import com.OBLIGATORIO.OBLIGATORIO.Observador.Observador;
 import com.OBLIGATORIO.OBLIGATORIO.Servicio.Fachada;
+import com.OBLIGATORIO.OBLIGATORIO.Servicio.Fachada.EventoSistema;
 
 import lombok.Getter;
 
@@ -80,7 +81,7 @@ public class UsuarioPropietario implements Usuario, Observador {
         Notificacion noti = new Notificacion(LocalDateTime.now(), "Se te asignó la bonificación \"" + bon.getNombre()+ "\" en el puesto \"" + puesto.getNombrePuesto() + "\".");
         this.agregarNotificacion(noti);
 
-        Fachada.getInstancia().avisar("BONIFICACION_ASIGNADA");
+        Fachada.getInstancia().avisar(EventoSistema.BONIFICACION_ASIGNADA);
     }
 
     @Override
@@ -115,7 +116,7 @@ public class UsuarioPropietario implements Usuario, Observador {
 
             this.agregarNotificacion(noti);
 
-            Fachada.getInstancia().avisar("SALDO_MINIMO");
+            Fachada.getInstancia().avisar(EventoSistema.SALDO_MINIMO);
         }
     }
 
@@ -130,7 +131,7 @@ public class UsuarioPropietario implements Usuario, Observador {
         this.agregarNotificacion(noti);
 
         // avisar SSE que debe refrescar tablero
-        Fachada.getInstancia().avisar("ESTADO_CAMBIADO");
+        Fachada.getInstancia().avisar(EventoSistema.ESTADO_CAMBIADO);
     }
 
     public void limpiarNotificaciones() {

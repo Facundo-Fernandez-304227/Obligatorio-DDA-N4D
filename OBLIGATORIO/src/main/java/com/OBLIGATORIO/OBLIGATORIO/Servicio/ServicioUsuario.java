@@ -16,6 +16,7 @@ import com.OBLIGATORIO.OBLIGATORIO.Modelo.Notificacion;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Puesto;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioAdministrador;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
+import com.OBLIGATORIO.OBLIGATORIO.Servicio.Fachada.EventoSistema;
 
 public class ServicioUsuario {
 
@@ -107,7 +108,7 @@ public class ServicioUsuario {
 
         propietario.limpiarNotificaciones();
 
-        Fachada.getInstancia().avisar("NOTIFICACIONES_BORRADAS");
+        Fachada.getInstancia().avisar(EventoSistema.NOTIFICACIONES_BORRADAS);
     }
 
 }

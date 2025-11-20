@@ -18,6 +18,7 @@ import com.OBLIGATORIO.OBLIGATORIO.Modelo.TarifaPuesto;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Transito;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Vehiculo;
+import com.OBLIGATORIO.OBLIGATORIO.Servicio.Fachada.EventoSistema;
 
 public class ServicioVehiculos {
 
@@ -58,7 +59,7 @@ public class ServicioVehiculos {
         propietario.agregarNotificacion(noti);
 
         // aviso SSE
-        Fachada.getInstancia().avisar("TRANSITO_REGISTRADO");
+        Fachada.getInstancia().avisar(EventoSistema.TRANSITO_REGISTRADO);
     }
 
     public Vehiculo buscarVehiculoPorMatricula(String matricula) throws VehiculoException {

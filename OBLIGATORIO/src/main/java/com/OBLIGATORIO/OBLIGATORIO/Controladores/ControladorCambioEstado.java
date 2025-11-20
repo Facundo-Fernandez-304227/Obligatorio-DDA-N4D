@@ -12,11 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.OBLIGATORIO.OBLIGATORIO.Dtos.EstadoDTO;
-import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoDeshabilitado;
-import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoHabilitado;
-import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoPenalizado;
 import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoPropietario;
-import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoSuspendido;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.UsuarioException;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
 import com.OBLIGATORIO.OBLIGATORIO.Servicio.Fachada;

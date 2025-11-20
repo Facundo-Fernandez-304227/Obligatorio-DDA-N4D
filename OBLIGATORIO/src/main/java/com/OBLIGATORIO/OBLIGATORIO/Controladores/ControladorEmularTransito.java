@@ -17,10 +17,7 @@ import com.OBLIGATORIO.OBLIGATORIO.Dtos.PuestoDTO;
 import com.OBLIGATORIO.OBLIGATORIO.Dtos.TarifaPuestoDTO;
 import com.OBLIGATORIO.OBLIGATORIO.Dtos.TransitosDTO;
 import com.OBLIGATORIO.OBLIGATORIO.Excepciones.UsuarioException;
-import com.OBLIGATORIO.OBLIGATORIO.Modelo.Bonificacion;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Puesto;
-import com.OBLIGATORIO.OBLIGATORIO.Modelo.TarifaPuesto;
-import com.OBLIGATORIO.OBLIGATORIO.Modelo.Transito;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.UsuarioPropietario;
 import com.OBLIGATORIO.OBLIGATORIO.Modelo.Vehiculo;
 import com.OBLIGATORIO.OBLIGATORIO.Servicio.Fachada;
@@ -73,6 +70,11 @@ public class ControladorEmularTransito {
             
             return Respuesta.lista(new Respuesta("error", e.getMessage()));
 
+
+            //ESTO CAPTURA EN UNO DE LOS CASOS ERROR DE MATRICULA, DEBE DECIR NO SE ENCONTRO MATRICULA
+            // O MANEJAR VARIOS TIPOS DE ERROR DIFERENTES PORQUE HACEMOS VARIAS PETICIONES QUE PUEDEN FALLAR
+            //SE MANEJA BIEN CON EL TRY CATCH Y NO REVIENTA LA APP PERO DEBE ESPECIFICAR ERROR X 
+            //CADA REQUEST DIFERENTE QUE SE LE HACE AL BACKEND
         } catch (Exception e) {
             return Respuesta.lista(new Respuesta("error", "Ocurrió un error inesperado."));
         }

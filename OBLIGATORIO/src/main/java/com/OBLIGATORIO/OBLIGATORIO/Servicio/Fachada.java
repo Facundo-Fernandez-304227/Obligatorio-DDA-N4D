@@ -1,7 +1,10 @@
 package com.OBLIGATORIO.OBLIGATORIO.Servicio;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import com.OBLIGATORIO.OBLIGATORIO.Dtos.NotificacionDTO;
 import com.OBLIGATORIO.OBLIGATORIO.Dtos.TarifaPuestoDTO;
 import com.OBLIGATORIO.OBLIGATORIO.Dtos.TransitosDTO;
 import com.OBLIGATORIO.OBLIGATORIO.Estado.EstadoPropietario;
@@ -30,6 +33,10 @@ public class Fachada extends Observable {
     private ServicioPuesto servicioPuesto = new ServicioPuesto();
     private ServicioBonificacion servicioBonificacion = new ServicioBonificacion();
     private ServicioEstado servicioEstado = new ServicioEstado();
+
+       public enum EventoSistema{ESTADO_CAMBIADO, BONIFICACION_ASIGNADA, SALDO_MINIMO, TRANSITO_REGISTRADO,
+        REFRESCAR_TABLERO, NOTIFICACIONES_BORRADAS, REFRESCAR_NOTIFICACIONES }
+     
 
     private Fachada() {
     }
